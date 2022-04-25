@@ -13,6 +13,18 @@
 #ifndef PHILO_H
 # define PHILO_H
 
+# include <pthread.h>
+# include <stdio.h> 
+
+typedef struct s_data
+{
+	long	tt_die;
+	long	tt_eat;
+	long	tt_sleep;
+	long	min_eat;
+}				t_data;
+
 long	ft_atoi(const char *nptr);
+void	*ft_calloc(size_t nmemb, size_t size);
 
 #endif

@@ -1,7 +1,7 @@
 NAME	= philo
 CC		= gcc
 CFLAGS	= -Wall -Werror -Wextra
-SRCS	= philo.c ft_atoi.c
+SRCS	= philo.c ft_atoi.c ft_calloc.c
 
 OBJS	= ${SRCS:.c=.o}
 BONUS_OBJS	= ${BONUS:.c=.o}
