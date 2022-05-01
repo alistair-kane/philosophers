@@ -6,7 +6,7 @@
 /*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 21:01:58 by alkane            #+#    #+#             */
-/*   Updated: 2022/04/02 23:48:21 by alistair         ###   ########.fr       */
+/*   Updated: 2022/04/27 02:18:21 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static int	is_space(char ch)
 		return (0);
 }
 
-static int	check_negative(const char *nptr, int *idx)
+static int	check_negative(const char *nptr, unsigned int *idx)
 {
 	int negative_count;
 	unsigned int	i;
