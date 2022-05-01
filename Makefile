@@ -1,6 +1,6 @@
 NAME	= philo
 CC		= gcc
-CFLAGS	= -Wall -Werror -Wextra
+CFLAGS	= -Wall -Werror -Wextra -g
 SRCS	= philo.c ft_atoi.c ft_calloc.c
 
 OBJS	= ${SRCS:.c=.o}
@@ -19,7 +19,7 @@ clean:
 #$(BONUS_OBJS)
 
 fclean: clean
-	rm -f $(NAME) checker
+	rm -f $(NAME)
 
 re:	fclean all
 
