@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 23:26:03 by alistair          #+#    #+#             */
-/*   Updated: 2022/05/02 03:36:00 by alistair         ###   ########.fr       */
+/*   Updated: 2022/05/03 00:35:57 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	assign_mutexs(t_data *data, int i, pthread_mutex_t *mutex_array, int n)
 	}
 }
 	
-t_data	data_init(t_data data, char **argv)
+t_data	data_init(t_data data, char **argv, long long milliseconds)
 {
 	data.tt_die = convert(ft_atoi(argv[2]), 16);
 	data.tt_eat = convert(ft_atoi(argv[3]), 16);
@@ -66,18 +66,20 @@ t_data	data_init(t_data data, char **argv)
 		data.min_eat = UINT8_MAX;
 	data.left_fork = 0;
 	data.right_fork = 0;
+	data.start_time = milliseconds;
 	return (data);
 }
 
 void	print_message(t_data *data, char *msg)
 {
 	struct timeval	tv;
-	long long milliseconds;
+	long long		milliseconds;
 
 	pthread_mutex_lock(data->print_lock);
 	gettimeofday(&tv, NULL);
 	milliseconds = tv.tv_sec*1000LL + tv.tv_usec/1000;
-	printf("%lld %d %s \n", milliseconds, data->id, msg);
+	milliseconds = milliseconds - data->start_time;
+	printf("%lld %d %s \n", milliseconds, data->id + 1, msg);
 	pthread_mutex_unlock(data->print_lock);
 }
 
@@ -130,11 +132,11 @@ int	eat_sleeping(t_data *data, uint8_t *meals)
 
 	last_meal = update_last_meal();
 	print_message(data, "is eating");
-	usleep((int)data->tt_eat * 1000);
-	pthread_mutex_lock(data->left_mutex);
-	data->left_fork = pthread_mutex_unlock(data->left_mutex);
-	pthread_mutex_lock(data->right_mutex);
-	data->right_fork = pthread_mutex_unlock(data->right_mutex);
+	usleep((int)data->tt_eat * 1000); // could not die here because started eating
+	pthread_mutex_lock(data->left_mutex); 
+	data->left_fork = pthread_mutex_unlock(data->left_mutex); // unlock left fork
+	pthread_mutex_lock(data->right_mutex); 
+	data->right_fork = pthread_mutex_unlock(data->right_mutex); // unlock right fork
 	(*meals)++;
 	if (check_dead(data, last_meal))
 		return (1);
@@ -166,11 +168,11 @@ void	*philosopher(void *arg)
 		if (data->left_fork && data->right_fork)
 		{
 			if (eat_sleeping(data, &meals))
-				break;
+				break ;
 		}
 		print_message(data, "is thinking");
 		if (check_dead(data, last_meal))
-			break;
+			break ;
 	}
 	return (NULL);
 }
@@ -200,6 +202,8 @@ int	main(int argc, char *argv[])
 	pthread_mutex_t	print_lock;
 	long			n; // max is 255, long because of atol
 	int				i;
+	struct timeval	tv;
+	long long		milliseconds;
 
 	if (argc >= 5 && argc <= 6)
 	{
@@ -224,12 +228,16 @@ int	main(int argc, char *argv[])
 			pthread_mutex_init(&mutex_array[i], NULL);
 		
 		pthread_mutex_init(&print_lock, NULL);
+		gettimeofday(&tv, NULL);
+		// start_time to fix time printout
+		milliseconds = tv.tv_sec*1000LL + tv.tv_usec/1000;
 
 		// init the threads for the philosopher function
 		i = -1;
 		while (++i < n)
 		{
-			data[i] = data_init(data[i], argv);
+			// data[i].death_flag = &death_flag;
+			data[i] = data_init(data[i], argv, milliseconds);
 			data[i].print_lock = &print_lock;
 			assign_mutexs(&data[i], i, mutex_array, n);
 			pthread_create(&thread_array[i], NULL, philosopher, &data[i]);
@@ -237,16 +245,14 @@ int	main(int argc, char *argv[])
 		i = -1;
 		while (++i < n)
 			pthread_join(thread_array[i], NULL);
-		
+
 		pthread_mutex_destroy(&print_lock);
 		i = -1;
 		while (++i < n)
 			pthread_mutex_destroy(&mutex_array[i]);
-
 		free(data);
 		free(thread_array);
 		free(mutex_array);
-		pthread_exit(NULL);
 		return (0);
 	}
 	printf("error\n");
