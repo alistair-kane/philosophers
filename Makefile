@@ -1,6 +1,6 @@
 NAME	= philo
 CC		= gcc
-CFLAGS	= -Wall -Werror -Wextra -g
+CFLAGS	= -Wall -Werror -Wextra -g -pthread
 SRCS	= philo.c ft_atoi.c ft_calloc.c
 
 OBJS	= ${SRCS:.c=.o}

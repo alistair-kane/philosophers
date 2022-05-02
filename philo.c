@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 23:26:03 by alistair          #+#    #+#             */
-/*   Updated: 2022/05/01 19:58:01 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/02 03:36:00 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,25 @@ int	check_input(char **argv)
 	return (0);
 }
 
-t_data	data_init(t_data data, char **argv, int i, pthread_mutex_t *mutex_array, int n)
+void	assign_mutexs(t_data *data, int i, pthread_mutex_t *mutex_array, int n)
+{
+	data->id = (uint8_t)i;
+	if (n == 1)
+	{
+		data->left_mutex = &mutex_array[0];
+		data->right_mutex = NULL;
+	}
+	else
+	{
+		if ((i + 1) < (n - 1))
+			data->right_mutex = &mutex_array[i + 1];
+		else
+			data->right_mutex = &mutex_array[0];
+		data->left_mutex = &mutex_array[i];
+	}
+}
+	
+t_data	data_init(t_data data, char **argv)
 {
 	data.tt_die = convert(ft_atoi(argv[2]), 16);
 	data.tt_eat = convert(ft_atoi(argv[3]), 16);
@@ -46,20 +64,8 @@ t_data	data_init(t_data data, char **argv, int i, pthread_mutex_t *mutex_array, 
 		data.min_eat = convert(ft_atoi(argv[5]), 8);
 	else
 		data.min_eat = UINT8_MAX;
-	data.id = (uint8_t)i;
-	if (n == 1)
-	{
-		data.left_fork = &mutex_array[0];
-		data.right_fork = NULL;
-	}
-	else
-	{
-		if ((i + 1) != (n - 1))
-			data.right_fork = &mutex_array[i + 1];
-		else
-			data.right_fork = &mutex_array[0];
-		data.left_fork = &mutex_array[i];
-	}
+	data.left_fork = 0;
+	data.right_fork = 0;
 	return (data);
 }
 
@@ -75,79 +81,97 @@ void	print_message(t_data *data, char *msg)
 	pthread_mutex_unlock(data->print_lock);
 }
 
+int	check_dead(t_data *data, long long last_meal)
+{
+	struct 		timeval	tv;
+	long long	t_current;
+
+	gettimeofday(&tv, NULL);
+	t_current = tv.tv_sec * 1000LL + tv.tv_usec / 1000;
+	if (t_current - last_meal > data->tt_die)
+	{
+		print_message(data, "died after eating");
+		return (1);
+	}
+	return (0);
+}
+
+long long	update_last_meal(void)
+{
+	struct 		timeval	tv;
+	long long	last_meal;
+	
+	gettimeofday(&tv, NULL);
+	last_meal = tv.tv_sec*1000LL + tv.tv_usec/1000;
+	return (last_meal);
+}
+
+void	pick_up_fork(t_data *data, char c)
+{
+	if (c == 'L')
+	{
+		pthread_mutex_lock(data->left_mutex);
+		print_message(data, "has taken a fork [L]");
+		data->left_fork = 1;
+		pthread_mutex_unlock(data->left_mutex);
+	}
+	else
+	{
+		pthread_mutex_lock(data->right_mutex);
+		print_message(data, "has taken a fork [R]");
+		data->right_fork = 1;
+		pthread_mutex_unlock(data->right_mutex);
+	}
+}
+
+int	eat_sleeping(t_data *data, uint8_t *meals)
+{
+	long long	last_meal;
+
+	last_meal = update_last_meal();
+	print_message(data, "is eating");
+	usleep((int)data->tt_eat * 1000);
+	pthread_mutex_lock(data->left_mutex);
+	data->left_fork = pthread_mutex_unlock(data->left_mutex);
+	pthread_mutex_lock(data->right_mutex);
+	data->right_fork = pthread_mutex_unlock(data->right_mutex);
+	(*meals)++;
+	if (check_dead(data, last_meal))
+		return (1);
+	if (*meals == data->min_eat)
+	{
+		print_message(data, "IS FULL!!");
+		return (1);
+	}
+	print_message(data, "is sleeping");
+	usleep((int)data->tt_sleep * 1000);
+	return (0);
+}
+
 void	*philosopher(void *arg)
 {
 	t_data		*data;
-	int			left_fork;
-	int			right_fork;
 	uint8_t		meals;
-	
-	struct 		timeval	tv;
 	long long	last_meal;
-	long long	t_current;
-	data = (t_data *)arg;
-	
-	int	tte;
-	int	tts;
-	int	ttd;
-	tte = (int)data->tt_eat;
-	tts = (int)data->tt_sleep;
-	ttd = (int)data->tt_die;
 
-	gettimeofday(&tv, NULL);
-	last_meal = tv.tv_sec*1000LL + tv.tv_usec/1000;
-	t_current = tv.tv_sec*1000LL + tv.tv_usec/1000;
+	data = (t_data *)arg;
 	meals = 0;
 	while (1)
 	{
-		left_fork = 0; // 0 means not held
-		right_fork = 0;
-		if (!pthread_mutex_lock(data->left_fork))
+		last_meal = update_last_meal();
+		if (!data->left_fork)
+			pick_up_fork(data, 'L');
+		if (data->left_fork && data->right_mutex != NULL && !data->right_fork)
+			pick_up_fork(data, 'R');
+		if (data->left_fork && data->right_fork)
 		{
-			print_message(data, "has taken a fork [L]");
-			left_fork = 1;
+			if (eat_sleeping(data, &meals))
+				break;
 		}
-		if (data->right_fork != NULL && !pthread_mutex_lock(data->right_fork))
-		{
-			print_message(data, "has taken a fork [R]");
-			right_fork = 1;
-		}
-		if (left_fork && right_fork)
-		{
-			gettimeofday(&tv, NULL);
-			last_meal = tv.tv_sec * 1000LL + tv.tv_usec / 1000;
-			print_message(data, "is eating");
-			usleep(tte * 1000);
-			left_fork = pthread_mutex_unlock(data->left_fork);
-			right_fork = pthread_mutex_unlock(data->right_fork);
-			meals++;
-			if (meals == data->min_eat)
-			{
-				print_message(data, "IS FULL!!");
-				break ;
-			}
-			print_message(data, "is sleeping");
-			usleep(tts * 1000);
-		}
-		if (left_fork)
-			left_fork = pthread_mutex_unlock(data->left_fork);
-		if (right_fork)
-			right_fork = pthread_mutex_unlock(data->right_fork);
 		print_message(data, "is thinking");
-		gettimeofday(&tv, NULL);
-		t_current = tv.tv_sec*1000LL + tv.tv_usec/1000;
-		if (t_current - last_meal > ttd)
-		{
-			print_message(data, "died");
-			break ;
-		}
+		if (check_dead(data, last_meal))
+			break;
 	}
-	// printf("ID: [%d]\n", data->id);
-	// printf("ttd: [%d]\n", data->tt_die);
-	// printf("tte: [%d]\n", data->tt_eat);
-	// printf("tts: [%d]\n", data->tt_sleep);
-	// printf("min eat: [%d]\n", data->min_eat);
-	// print_message(data);
 	return (NULL);
 }
 
@@ -184,7 +208,7 @@ int	main(int argc, char *argv[])
 		n = ft_atoi(argv[1]);
 		// allocate the memory for each data struct to be later passed to each thread
 		// i.e. initialization happens later
-		data = ft_calloc(sizeof(t_data) , n);
+		data = malloc(sizeof(t_data) * n);
 		if (!data)
 			return 1;
 
@@ -194,7 +218,7 @@ int	main(int argc, char *argv[])
 			return 1;
 
 		// allocate the memory to hold all the mutex
-		mutex_array = malloc(n * sizeof(pthread_mutex_t));
+		mutex_array = malloc(sizeof(pthread_mutex_t) * n);
 		i = -1;
 		while (++i < n)
 			pthread_mutex_init(&mutex_array[i], NULL);
@@ -205,8 +229,9 @@ int	main(int argc, char *argv[])
 		i = -1;
 		while (++i < n)
 		{
+			data[i] = data_init(data[i], argv);
 			data[i].print_lock = &print_lock;
-			data[i] = data_init(data[i], argv, i, mutex_array, n);
+			assign_mutexs(&data[i], i, mutex_array, n);
 			pthread_create(&thread_array[i], NULL, philosopher, &data[i]);
 		}
 		i = -1;
@@ -217,9 +242,10 @@ int	main(int argc, char *argv[])
 		i = -1;
 		while (++i < n)
 			pthread_mutex_destroy(&mutex_array[i]);
-		
-		free(thread_array);
+
 		free(data);
+		free(thread_array);
+		free(mutex_array);
 		pthread_exit(NULL);
 		return (0);
 	}

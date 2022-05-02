@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/01 18:05:56 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/02 03:23:51 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,19 +25,16 @@ typedef struct s_data
 {
 	int	n;
 
-	uint16_t	tt_die;
-	uint16_t	tt_eat;
-	uint16_t	tt_sleep;
-	uint8_t		min_eat;
-	uint8_t		id;
-	// pthread_mutex_t	*mutex_array;
+	uint16_t		tt_die;
+	uint16_t		tt_eat;
+	uint16_t		tt_sleep;
+	uint8_t			min_eat;
+	uint8_t			id;
+	int8_t			left_fork;
+	int8_t			right_fork;
+	pthread_mutex_t	*left_mutex;
+	pthread_mutex_t	*right_mutex;
 	pthread_mutex_t	*print_lock;
-	pthread_mutex_t	*left_fork;
-	pthread_mutex_t	*right_fork;
-	
-
-
-	pthread_mutex_t *forkzero;
 }				t_data;
 
 long	ft_atoi(const char *nptr);
