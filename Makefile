@@ -1,7 +1,7 @@
 NAME	= philo
 CC		= gcc
 CFLAGS	= -Wall -Werror -Wextra -g -pthread
-SRCS	= philo.c ft_atoi.c ft_calloc.c
+SRCS	= philo.c parse_init.c utils.c cleanup.c ft_atoi.c ft_calloc.c	
 
 OBJS	= ${SRCS:.c=.o}
 BONUS_OBJS	= ${BONUS:.c=.o}
