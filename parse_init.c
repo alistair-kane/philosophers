@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:14:51 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/04 13:34:36 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/08 19:10:09 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,39 +55,39 @@ int	check_input(int	argc, char **argv)
 	return (0);
 }
 
-void	assign_mutexs(t_data *data, t_philo philo)
+void	assign_mutexs(t_data *data, t_philo *philo)
 {
 	if (data->n == 1)
 	{
-		philo.left_mutex = &data->mutex_array[0];
-		philo.right_mutex = NULL;
+		philo->left_mutex = &data->mutex_array[0];
+		philo->right_mutex = NULL;
 	}
 	else
 	{
-		if ((philo.id + 1) < (data->n - 1))
-			philo.right_mutex = &data->mutex_array[philo.id + 1];
+		if ((philo->id + 1) < (data->n - 1))
+			philo->right_mutex = &data->mutex_array[philo->id + 1];
 		else
-			philo.right_mutex = &data->mutex_array[0];
-		philo.left_mutex = &data->mutex_array[philo.id];
+			philo->right_mutex = &data->mutex_array[0];
+		philo->left_mutex = &data->mutex_array[philo->id];
 	}
 }
 
-void	philo_init(t_data *data, t_philo philo, char **argv, int i)
+void	philo_init(t_data *data, t_philo *philo, char **argv, int i)
 {
-	philo.id = (uint8_t)i;
-	philo.print_lock = data->print_lock;
+	philo->id = i;
+	philo->print_lock = data->print_lock;
 	assign_mutexs(data, philo);
-	philo.tt_die = convert(ft_atoi(argv[2]), 16);
-	philo.tt_eat = convert(ft_atoi(argv[3]), 16);
-	philo.tt_sleep = convert(ft_atoi(argv[4]), 16);
+	philo->tt_die = convert(ft_atoi(argv[2]), 16);
+	philo->tt_eat = convert(ft_atoi(argv[3]), 16);
+	philo->tt_sleep = convert(ft_atoi(argv[4]), 16);
 	// need to check if optional arg is passed
 	if (argv[5] != NULL)
-		philo.min_eat = convert(ft_atoi(argv[5]), 8);
+		philo->min_eat = convert(ft_atoi(argv[5]), 8);
 	else
-		philo.min_eat = UINT8_MAX;
+		philo->min_eat = UINT8_MAX;
 	// philo.left_fork = 0; set by calloc
 	// philo.right_fork = 0; set by calloc
-	philo.start_time = get_time();
+	philo->start_time = get_time();
 }
 
 void	set_table(t_data *data, char **argv)
@@ -111,13 +111,13 @@ void	set_table(t_data *data, char **argv)
 	i = -1;
 	while (++i < data->n)
 		pthread_mutex_init(&data->mutex_array[i], NULL);
-	data->print_lock = malloc(sizeof(pthread_mutex_t *));
+	data->print_lock = malloc(sizeof(pthread_mutex_t));
 	pthread_mutex_init(data->print_lock, NULL);
 	// init the threads for the philosopher function
 	i = -1;
 	while (++i < data->n)
 	{
-		philo_init(data, data->philos[i], argv, i);
+		philo_init(data, &data->philos[i], argv, i);
 		pthread_create(&data->thread_array[i], NULL, philosopher, &data->philos[i]);
 	}
 	i = -1;

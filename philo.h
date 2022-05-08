@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/04 13:32:22 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/08 19:10:25 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ typedef struct s_philo
 	uint16_t		tt_eat;
 	uint16_t		tt_sleep;
 	uint8_t			min_eat;
-	uint8_t			id;
+	int				id;
 	int8_t			left_fork;
 	int8_t			right_fork;
 	pthread_mutex_t	*left_mutex;
@@ -39,7 +39,7 @@ typedef struct s_philo
 
 typedef struct s_data
 {
-	int				n; // max is 255, long because of atol
+	long			n; // max is 255, long because of atol
 	pthread_t		*thread_array;
 	pthread_mutex_t	*mutex_array;
 	pthread_mutex_t	*print_lock;
@@ -51,7 +51,7 @@ void	*ft_calloc(size_t nmemb, size_t size);
 
 int			check_input(int	argc, char **argv);
 void		set_table(t_data *data, char **argv);
-void		philo_init(t_data *data, t_philo philo, char **argv, int i);
+void		philo_init(t_data *data, t_philo *philo, char **argv, int i);
 long long   get_time(void);
 void		print_message(t_philo *philo, char *msg);
 void		*philosopher(void *arg);
