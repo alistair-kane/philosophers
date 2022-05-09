@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:14:51 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/08 19:10:09 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/08 22:05:02 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static uint16_t	convert(long temp_l, int bytes)
 	return (0);
 }
 
-int	check_input(int	argc, char **argv)
+static int	check_input(int	argc, char **argv)
 {
 	uint16_t	tt_die;
 	uint16_t	tt_eat;
@@ -55,7 +55,7 @@ int	check_input(int	argc, char **argv)
 	return (0);
 }
 
-void	assign_mutexs(t_data *data, t_philo *philo)
+static void	assign_mutexs(t_data *data, t_philo *philo)
 {
 	if (data->n == 1)
 	{
@@ -72,10 +72,12 @@ void	assign_mutexs(t_data *data, t_philo *philo)
 	}
 }
 
-void	philo_init(t_data *data, t_philo *philo, char **argv, int i)
+static void	philo_init(t_data *data, t_philo *philo, char **argv, int i)
 {
 	philo->id = i;
-	philo->print_lock = data->print_lock;
+	philo->print_lock = &data->print_lock;
+	philo->dead_lock = &data->dead_lock;
+	philo->dead_flag = &data->dead_flag;
 	assign_mutexs(data, philo);
 	philo->tt_die = convert(ft_atoi(argv[2]), 16);
 	philo->tt_eat = convert(ft_atoi(argv[3]), 16);
@@ -90,31 +92,41 @@ void	philo_init(t_data *data, t_philo *philo, char **argv, int i)
 	philo->start_time = get_time();
 }
 
-void	set_table(t_data *data, char **argv)
+int	set_table(t_data *data, int argc, char **argv)
 {
 	int				i;
-
+	
+	if (check_input(argc, argv) == 1)
+		return (1);
 	data = malloc(sizeof(t_data));
 	if (!data)
-		return ;
+		return (1);
 	data->n = ft_atoi(argv[1]);
-	data->philos = ft_calloc(sizeof(t_philo), data->n);
+	
+	data->philos = malloc(sizeof(t_philo) * data->n);
 	if (!data->philos)
-		return ;
-
+		return (1);
+	
 	// allocate memory for all the threads
 	data->thread_array = malloc(sizeof(pthread_t) * data->n);
 	if (!data->thread_array)
-		return ;
-	// allocate the memory to hold all the mutex
+		return (1);
+	
+	// allocate the memory to hold all of the fork mutexs
 	data->mutex_array = malloc(sizeof(pthread_mutex_t) * data->n);
 	i = -1;
 	while (++i < data->n)
 		pthread_mutex_init(&data->mutex_array[i], NULL);
-	data->print_lock = malloc(sizeof(pthread_mutex_t));
-	pthread_mutex_init(data->print_lock, NULL);
-	// init the threads for the philosopher function
-	i = -1;
+	
+	// allocate the memory to hold print and dead mutexs
+	// data->print_lock = malloc(sizeof(pthread_mutex_t));
+	pthread_mutex_init(&(data->print_lock), NULL);
+	// data->dead_lock = malloc(sizeof(pthread_mutex_t));
+	pthread_mutex_init(&(data->dead_lock), NULL);
+	
+	data->dead_flag = 0; // nobody on the floor yet
+	
+	i = -1; // init the threads for the philosopher function
 	while (++i < data->n)
 	{
 		philo_init(data, &data->philos[i], argv, i);
@@ -123,4 +135,5 @@ void	set_table(t_data *data, char **argv)
 	i = -1;
 	while (++i < data->n)
 		pthread_join(data->thread_array[i], NULL);
+	return (0);
 }
