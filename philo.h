@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/08 21:53:50 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/09 17:18:56 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ typedef struct s_philo
 	uint16_t		tt_die;
 	uint16_t		tt_eat;
 	uint16_t		tt_sleep;
-	
 	uint8_t			min_eat;
 	
 	int				id;

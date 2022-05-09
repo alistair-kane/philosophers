@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:14:51 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/08 22:05:02 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/09 16:54:17 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,7 @@ int	set_table(t_data *data, int argc, char **argv)
 	while (++i < data->n)
 	{
 		philo_init(data, &data->philos[i], argv, i);
-		pthread_create(&data->thread_array[i], NULL, philosopher, &data->philos[i]);
+		pthread_create(&data->thread_array[i], NULL, philosopher, (void *)&(data->philos[i]));
 	}
 	i = -1;
 	while (++i < data->n)

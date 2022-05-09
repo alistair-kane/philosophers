@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 23:26:03 by alistair          #+#    #+#             */
-/*   Updated: 2022/05/08 21:37:02 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/09 17:15:32 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ void	*philosopher(void *arg)
 	philo = (t_philo *)arg;
 	meals = 0;
 	last_meal = get_time();
-	while (1)
+	while (philo->dead_flag != 0)
 	{
 		if (!philo->left_fork)
 			pick_up_fork(philo, 'L');
@@ -93,7 +93,7 @@ int	main(int argc, char *argv[])
 	data = NULL;
 	if (set_table(data, argc, argv) == 1)
 		return(2);
-	clear_table(data);
+	 clear_table(data);
 
 	return (0);
 }

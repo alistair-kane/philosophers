@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:18:31 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/08 20:47:31 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/09 16:55:06 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,8 @@ int	check_dead(t_philo *philo, long long last_meal)
 	{
 		print_message(philo, "died");
 		pthread_mutex_lock(philo->dead_lock);
-		*philo->dead_flag = 1;
+		*(philo->dead_flag) = 1;
+		
 		pthread_mutex_unlock(philo->dead_lock);
 		return (1);
 	}
