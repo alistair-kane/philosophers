@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/09 17:18:56 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/09 18:07:15 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,13 +56,14 @@ long	ft_atoi(const char *nptr);
 void	*ft_calloc(size_t nmemb, size_t size);
 
 // int		check_input(int	argc, char **argv);
-int			set_table(t_data *data, int argc, char **argv);
+t_data		*set_table(int argc, char **argv);
 // void		philo_init(t_data *data, t_philo *philo, char **argv, int i);
 long long   get_time(void);
 void		print_message(t_philo *philo, char *msg);
 void		*philosopher(void *arg);
 void    	clear_table(t_data *data);
-int			check_dead(t_philo *philo, long long last_meal);
-int			sleep_or_die(t_philo *philo, int sleep, long long last_meal);
+// int			check_dead(t_philo *philo, long long last_meal);
+void		check_dead(t_philo *philo, long long last_meal);
+void		sleep_or_die(t_philo *philo, int sleep, long long last_meal);
 
 #endif

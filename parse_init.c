@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:14:51 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/09 16:54:17 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/09 18:06:20 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,9 +75,9 @@ static void	assign_mutexs(t_data *data, t_philo *philo)
 static void	philo_init(t_data *data, t_philo *philo, char **argv, int i)
 {
 	philo->id = i;
-	philo->print_lock = &data->print_lock;
-	philo->dead_lock = &data->dead_lock;
-	philo->dead_flag = &data->dead_flag;
+	philo->print_lock = &(data->print_lock);
+	philo->dead_lock = &(data->dead_lock);
+	philo->dead_flag = &(data->dead_flag);
 	assign_mutexs(data, philo);
 	philo->tt_die = convert(ft_atoi(argv[2]), 16);
 	philo->tt_eat = convert(ft_atoi(argv[3]), 16);
@@ -92,25 +92,26 @@ static void	philo_init(t_data *data, t_philo *philo, char **argv, int i)
 	philo->start_time = get_time();
 }
 
-int	set_table(t_data *data, int argc, char **argv)
+t_data	*set_table(int argc, char **argv)
 {
-	int				i;
+	t_data	*data;
+	int		i;
 	
 	if (check_input(argc, argv) == 1)
-		return (1);
+		return NULL;
 	data = malloc(sizeof(t_data));
 	if (!data)
-		return (1);
+		return NULL;
 	data->n = ft_atoi(argv[1]);
 	
 	data->philos = malloc(sizeof(t_philo) * data->n);
 	if (!data->philos)
-		return (1);
+		return NULL;
 	
 	// allocate memory for all the threads
 	data->thread_array = malloc(sizeof(pthread_t) * data->n);
 	if (!data->thread_array)
-		return (1);
+		return NULL;
 	
 	// allocate the memory to hold all of the fork mutexs
 	data->mutex_array = malloc(sizeof(pthread_mutex_t) * data->n);
@@ -135,5 +136,5 @@ int	set_table(t_data *data, int argc, char **argv)
 	i = -1;
 	while (++i < data->n)
 		pthread_join(data->thread_array[i], NULL);
-	return (0);
+	return (data);
 }

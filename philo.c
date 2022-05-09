@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 23:26:03 by alistair          #+#    #+#             */
-/*   Updated: 2022/05/09 17:15:32 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/09 18:07:26 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,15 +37,17 @@ int	eat_sleeping(t_philo *philo, uint8_t *meals)
 	last_meal = get_time();
 	print_message(philo, "is eating");
 	// usleep((int)philo->tt_eat * 1000); // could die here while eating
-	if (sleep_or_die(philo, (int)philo->tt_eat, last_meal) == 1)
-		return (1);
+	// if (sleep_or_die(philo, (int)philo->tt_eat, last_meal) == 1)
+		// return (1);
+	sleep_or_die(philo, (int)philo->tt_eat, last_meal);
 	pthread_mutex_lock(philo->left_mutex); 
 	philo->left_fork = pthread_mutex_unlock(philo->left_mutex); // unlock left fork
 	pthread_mutex_lock(philo->right_mutex); 
 	philo->right_fork = pthread_mutex_unlock(philo->right_mutex); // unlock right fork
 	(*meals)++;
-	if (check_dead(philo, last_meal))
-		return (1);
+	check_dead(philo, last_meal);
+	// if (check_dead(philo, last_meal))
+		// return (1);
 	if (*meals == philo->min_eat)
 	{
 		print_message(philo, "IS FULL!!");
@@ -53,8 +55,9 @@ int	eat_sleeping(t_philo *philo, uint8_t *meals)
 	}
 	print_message(philo, "is sleeping");
 	// usleep((int)philo->tt_sleep * 1000);
-	if (sleep_or_die(philo, (int)philo->tt_sleep, last_meal) == 1)
-		return (1);
+	// if (sleep_or_die(philo, (int)philo->tt_sleep, last_meal) == 1)
+		// return (1);
+	sleep_or_die(philo, (int)philo->tt_sleep, last_meal);
 	return (0);
 }
 
@@ -67,7 +70,7 @@ void	*philosopher(void *arg)
 	philo = (t_philo *)arg;
 	meals = 0;
 	last_meal = get_time();
-	while (philo->dead_flag != 0)
+	while (*(philo->dead_flag) == 0)
 	{
 		if (!philo->left_fork)
 			pick_up_fork(philo, 'L');
@@ -75,13 +78,16 @@ void	*philosopher(void *arg)
 			pick_up_fork(philo, 'R');
 		if (philo->left_fork && philo->right_fork)
 		{
-			if (eat_sleeping(philo, &meals))
+			if (eat_sleeping(philo, &meals) == 1)
+			{
 				break ;
+			}
 			last_meal = get_time();
 		}
 		print_message(philo, "is thinking");
-		if (check_dead(philo, last_meal))
-			break ;
+		// if (check_dead(philo, last_meal))
+		// 	break ;
+		check_dead(philo, last_meal);
 	}
 	return (NULL);
 }
@@ -90,10 +96,9 @@ int	main(int argc, char *argv[])
 {
 	t_data			*data;
 	
-	data = NULL;
-	if (set_table(data, argc, argv) == 1)
+	data = set_table(argc, argv);
+	if (data == NULL)
 		return(2);
-	 clear_table(data);
-
+	clear_table(data);
 	return (0);
 }
