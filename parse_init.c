@@ -6,47 +6,38 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:14:51 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/09 18:06:20 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/10 18:13:05 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static uint16_t	convert(long temp_l, int bytes)
+static int	convert(long temp_l)
 {
-	if (bytes == 16)
-	{
-		if (temp_l > UINT16_MAX || temp_l < 1)
-			return (0);
-		return((uint16_t)temp_l);
-	}
-	if (bytes == 8)
-	{
-		if (temp_l > UINT8_MAX || temp_l < 1)
-			return (0);
-		return((uint8_t)temp_l);
-	}
-	return (0);
+	if (temp_l > INT32_MAX || temp_l < 1)
+		return (0);
+	return((int)temp_l);
 }
 
 static int	check_input(int	argc, char **argv)
 {
-	uint16_t	tt_die;
-	uint16_t	tt_eat;
-	uint16_t	tt_sleep;
+	int	tt_die;
+	int	tt_eat;
+	int	tt_sleep;
+
 	if (argc >= 5 && argc <= 6)
 	{
 		if (ft_atoi(argv[1]) > 255 || ft_atoi(argv[1]) < 1)
 			return (1);
-		tt_die = convert(ft_atoi(argv[2]), 16);
-		tt_eat = convert(ft_atoi(argv[3]), 16);
-		tt_sleep = convert(ft_atoi(argv[4]), 16);
-		if (tt_die == 0 || tt_eat == 0|| tt_sleep == 0)
+		tt_die = convert(ft_atoi(argv[2]));
+		tt_eat = convert(ft_atoi(argv[3]));
+		tt_sleep = convert(ft_atoi(argv[4]));
+		if (tt_die == 0 || tt_eat == 0 || tt_sleep == 0)
 			return (1);
 		// need to check if optional arg is passed
 		if (argv[5] != NULL)
 		{
-			if (convert(ft_atoi(argv[5]), 8) == 0)
+			if (convert(ft_atoi(argv[5])) == 0)
 				return (1);
 		}
 	}
@@ -55,86 +46,48 @@ static int	check_input(int	argc, char **argv)
 	return (0);
 }
 
-static void	assign_mutexs(t_data *data, t_philo *philo)
+void	philo_init(t_data *data)
 {
-	if (data->n == 1)
+	int	i;
+
+	i = -1; // init the threads for the philosopher function
+	while (++i < data->n_philo)
 	{
-		philo->left_mutex = &data->mutex_array[0];
-		philo->right_mutex = NULL;
-	}
-	else
-	{
-		if ((philo->id + 1) < (data->n - 1))
-			philo->right_mutex = &data->mutex_array[philo->id + 1];
-		else
-			philo->right_mutex = &data->mutex_array[0];
-		philo->left_mutex = &data->mutex_array[philo->id];
+		data->philos[i].id = i;
+		data->philos[i].n_eaten = 0;
+		data->philos[i].left_fork = i;
+		data->philos[i].right_fork = (i + 1) % data->n_philo;
+		data->philos[i].last_meal = 0;
+		data->philos[i].data = data;
 	}
 }
 
-static void	philo_init(t_data *data, t_philo *philo, char **argv, int i)
+int	set_table(t_data *data, int argc, char **argv)
 {
-	philo->id = i;
-	philo->print_lock = &(data->print_lock);
-	philo->dead_lock = &(data->dead_lock);
-	philo->dead_flag = &(data->dead_flag);
-	assign_mutexs(data, philo);
-	philo->tt_die = convert(ft_atoi(argv[2]), 16);
-	philo->tt_eat = convert(ft_atoi(argv[3]), 16);
-	philo->tt_sleep = convert(ft_atoi(argv[4]), 16);
-	// need to check if optional arg is passed
-	if (argv[5] != NULL)
-		philo->min_eat = convert(ft_atoi(argv[5]), 8);
-	else
-		philo->min_eat = UINT8_MAX;
-	// philo.left_fork = 0; set by calloc
-	// philo.right_fork = 0; set by calloc
-	philo->start_time = get_time();
-}
-
-t_data	*set_table(int argc, char **argv)
-{
-	t_data	*data;
 	int		i;
 	
 	if (check_input(argc, argv) == 1)
-		return NULL;
-	data = malloc(sizeof(t_data));
-	if (!data)
-		return NULL;
-	data->n = ft_atoi(argv[1]);
-	
-	data->philos = malloc(sizeof(t_philo) * data->n);
-	if (!data->philos)
-		return NULL;
-	
-	// allocate memory for all the threads
-	data->thread_array = malloc(sizeof(pthread_t) * data->n);
-	if (!data->thread_array)
-		return NULL;
-	
-	// allocate the memory to hold all of the fork mutexs
-	data->mutex_array = malloc(sizeof(pthread_mutex_t) * data->n);
+		return (1);
+	data->n_philo = ft_atoi(argv[1]);
+	data->tt_die = ft_atoi(argv[2]);
+	data->tt_eat = ft_atoi(argv[3]);
+	data->tt_sleep = ft_atoi(argv[4]);
+	data->all_eaten = 0;
+	data->dead_flag = 0;
+	if (argv[5] != NULL)
+		data->n_meals = ft_atoi(argv[5]);
+	else
+		data->n_meals = -1;
+
 	i = -1;
-	while (++i < data->n)
-		pthread_mutex_init(&data->mutex_array[i], NULL);
-	
-	// allocate the memory to hold print and dead mutexs
-	// data->print_lock = malloc(sizeof(pthread_mutex_t));
-	pthread_mutex_init(&(data->print_lock), NULL);
-	// data->dead_lock = malloc(sizeof(pthread_mutex_t));
-	pthread_mutex_init(&(data->dead_lock), NULL);
-	
-	data->dead_flag = 0; // nobody on the floor yet
-	
-	i = -1; // init the threads for the philosopher function
-	while (++i < data->n)
-	{
-		philo_init(data, &data->philos[i], argv, i);
-		pthread_create(&data->thread_array[i], NULL, philosopher, (void *)&(data->philos[i]));
-	}
-	i = -1;
-	while (++i < data->n)
-		pthread_join(data->thread_array[i], NULL);
-	return (data);
+	// init mutexes
+	while (++i < data->n_philo)
+		pthread_mutex_init(&(data->fork_array[i]), NULL); // check error?
+	pthread_mutex_init(&(data->print_lock), NULL); // check error?
+	pthread_mutex_init(&(data->meal_lock), NULL); // check error?
+	philo_init(data);
+	// i = -1;
+	// while (++i < data->n)
+	// 	pthread_join(data->thread_array[i], NULL);
+	return (0);
 }

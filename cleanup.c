@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 12:19:11 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/09 18:00:05 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/10 15:51:14 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,9 @@ void	clear_table(t_data *data)
 	
 	i = -1;
 	while (++i < data->n)
-		pthread_mutex_destroy(&(data->mutex_array[i]));
-	free(data->mutex_array);
+		pthread_mutex_destroy(&(data->fork_array[i]));
+	free(data->fork_array);
+	free(data->fork_status);
 	free(data->thread_array);
     free(data->philos);
 	free(data);

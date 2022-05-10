@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:18:31 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/09 17:57:37 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/10 18:17:27 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,19 +44,20 @@ void	print_message(t_philo *philo, char *msg)
 // 	return (0);
 // }
 
-void	check_dead(t_philo *philo, long long last_meal)
+void	check_dead(t_data *data, t_philo philo)
 {
-	if ((get_time() - last_meal) > philo->tt_die)
+	if ((get_time() - philo.last_meal) > data->tt_die)
 	{
-		print_message(philo, "died");
-		pthread_mutex_lock(philo->dead_lock);
-		*(philo->dead_flag) = 1;
-		pthread_mutex_unlock(philo->dead_lock);
+		print_message(&philo, "died");
+		data->dead_flag = 1;
 	}
 }
 
-void	sleep_or_die(t_philo *philo, int sleep, long long last_meal)
+void	sleep_or_die(t_philo *philo, long long last_meal)
 {
+	int	sleep;
+	
+	sleep = (int)philo->tt_sleep;
 	while (sleep > 0)
 	{
 		usleep(1000); // sleep for 1 ms
