@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/11 18:08:44 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/11 18:43:05 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,9 @@ long long	get_time(void);
 void		print_message(t_philo *philo, char *msg);
 void		clear_table(t_data *data);
 void		do_stuff(t_data *data, long long stuff_time);
-void		check_dead(t_philo philo);
+void		chk_any_deaths(t_philo philo);
 int			chk_dead(t_data *data);
-int 		chk_ph_meals(t_philo philo);
+int			chk_ph_meals(t_philo philo);
 int			chk_total_eat(t_data *data);
-// void		eating(t_philo *philo);
 
 #endif

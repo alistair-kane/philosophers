@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:18:31 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/11 18:17:31 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/11 19:04:04 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,56 +28,9 @@ void	print_message(t_philo *philo, char *msg)
 
 	data = philo->data;
 	pthread_mutex_lock(&(data->print_lock));
-	// if (check_df(data) == 0)
+	if (data->dead_flag == 0)
 		printf("%lld %d %s \n", get_time() - data->start_ts, philo->id + 1, msg);
 	pthread_mutex_unlock(&(data->print_lock));
-}
-
-// void	chk_dead_flag(t_philo philo)
-// {
-// 	t_data	*data;
-
-// 	data = philo.data;
-// 	pthread_mutex_lock(&(data->dead_lock));
-// 	if ((get_time() - philo.last_meal) > data->tt_die)
-// 	{
-// 		print_message(&philo, "died");
-// 		data->dead_flag = 1;
-// 	}
-// 	pthread_mutex_unlock(&(data->dead_lock));
-// 	usleep(100); // why sleep here?
-// }
-
-int	chk_dead(t_data *data)
-{
-	int	temp;
-	
-	pthread_mutex_lock(&(data->dead_lock));
-	temp = data->dead_flag;
-	pthread_mutex_unlock(&(data->dead_lock));
-	return (temp);
-}
-
-int chk_ph_meals(t_philo philo)
-{
-	t_data	*data;
-	int		temp;
-
-	data = philo.data;
-	pthread_mutex_lock(&(data->eat_lock));
-	temp = philo.n_eaten;
-	pthread_mutex_unlock(&(data->eat_lock));
-	return (temp);
-}
-
-int	chk_total_eat(t_data *data)
-{
-	int	temp;
-	
-	pthread_mutex_lock(&(data->eat_lock));
-	temp = data->all_eaten;
-	pthread_mutex_unlock(&(data->eat_lock));
-	return (temp);
 }
 
 void	do_stuff(t_data *data, long long stuff_time)
