@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:14:51 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/11 19:10:12 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/11 21:44:29 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,6 @@ static int	init_mutexs(t_data *data)
 
 int	set_table(t_data *data, int argc, char **argv)
 {
-	int		i;
-
 	if (check_input(argc, argv) == 1)
 		return (1);
 	data->n_philo = ft_atoi(argv[1]);
