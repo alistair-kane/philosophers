@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:14:51 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/11 17:27:48 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/11 23:50:13 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ static int	check_input(int argc, char **argv)
 	return (1);
 }
 
-void	philo_init(t_data *data)
+static void	philo_init(t_data *data)
 {
 	int	i;
 
@@ -53,36 +53,68 @@ void	philo_init(t_data *data)
 	{
 		data->philos[i].id = i;
 		data->philos[i].n_eaten = 0;
-		data->philos[i].left_fork = i;
-		data->philos[i].right_fork = (i + 1) % data->n_philo;
+		data->philos[i].left_fork = i; //int
+		data->philos[i].right_fork = (i + 1) % data->n_philo; //int
 		data->philos[i].last_meal = 0;
 		data->philos[i].data = data;
 	}
 }
 
+// static int	init_mutexs(t_data *data)
+// {
+// 	int	i;
+
+// 	i = -1;
+// 	while (++i < data->n_philo)
+// 		if (pthread_mutex_init(&(data->fork_array[i]), NULL) == 1)
+// 			return (1);
+// 	if (pthread_mutex_init(&(data->print_lock), NULL) == 1)
+// 		return (1);
+// 	if (pthread_mutex_init(&(data->dead_lock), NULL) == 1)
+// 		return (1);
+// 	if (pthread_mutex_init(&(data->eat_lock), NULL) == 1)
+// 		return (1);
+// 	return (0);
+// }
+
 int	set_table(t_data *data, int argc, char **argv)
 {
-	int		i;
-
 	if (check_input(argc, argv) == 1)
 		return (1);
 	data->n_philo = ft_atoi(argv[1]);
 	data->tt_die = ft_atoi(argv[2]);
 	data->tt_eat = ft_atoi(argv[3]);
 	data->tt_sleep = ft_atoi(argv[4]);
-	data->all_eaten = 0;
-	data->dead_flag = 0;
+	
+
+	data->all_eaten = 0; // needs to be semaphore?
+	data->dead_flag = 0; // needs to be semaphore?
 	if (argv[5] != NULL)
 		data->n_meal = ft_atoi(argv[5]);
 	else
 		data->n_meal = -1;
-	i = -1;
-	// init mutexs
-	while (++i < data->n_philo)
-		pthread_mutex_init(&(data->fork_array[i]), NULL); // check error?
-	pthread_mutex_init(&(data->print_lock), NULL); // check error?
-	pthread_mutex_init(&(data->dead_lock), NULL); // check error?
-	pthread_mutex_init(&(data->eat_lock), NULL); // check error?
+	// if (init_mutexs(data) == 1)
+		// return (1);
 	philo_init(data);
 	return (0);
 }
+
+
+/*
+	constant semaphore for each fork
+		wait to "take 'a Left' fork"
+		wait to "take 'a Right' fork"
+			make a thread to check this?
+			eat for the time
+		post "the forks back"
+		
+		if dead post in main thread of all forks?
+
+
+/*
+In the Bonus. 
+Every Philosopher has its own thread to check the lifetime.
+Because the Philosopher process is waiting for the fork semaphores.  
+He can't check its lifetime while waiting. 
+So it is outsourced.
+*/

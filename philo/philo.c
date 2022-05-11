@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 23:26:03 by alistair          #+#    #+#             */
-/*   Updated: 2022/05/11 18:57:15 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/11 22:25:09 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	eating(t_philo *philo)
 	(philo->n_eaten)++;
 	pthread_mutex_unlock(&(data->eat_lock));
 	print_message(philo, "is eating");
-	do_stuff(data, data->tt_eat);
+	spend_time(data, data->tt_eat);
 	pthread_mutex_unlock(&(data->fork_array[philo->right_fork]));
 	pthread_mutex_unlock(&(data->fork_array[philo->left_fork]));
 }
@@ -46,14 +46,14 @@ static void	*ph_func(void *arg)
 		return (NULL);
 	}
 	if (philo->id % 2 == 0)
-		usleep(data->tt_eat * 500);
+		usleep(15000);
 	while (chk_dead(data) == 0)
 	{
 		eating(philo);
 		if (chk_total_eat(data) == 1)
 			break ;
 		print_message(philo, "is sleeping");
-		do_stuff(data, data->tt_sleep);
+		spend_time(data, data->tt_sleep);
 		print_message(philo, "is thinking");
 	}
 	return (NULL);
@@ -81,21 +81,6 @@ static void	alive_loop(t_data *d, t_philo *p)
 			pthread_mutex_unlock(&(d->eat_lock));
 		}
 	}
-}
-
-static void	tidy_up(t_data *data, t_philo *philos)
-{
-	int	i;
-
-	i = -1;
-	while (++i < data->n_philo)
-		pthread_join(philos[i].thread_id, NULL);
-	i = -1;
-	while (++i < data->n_philo)
-		pthread_mutex_destroy(&(data->fork_array[i]));
-	pthread_mutex_destroy(&(data->print_lock));
-	pthread_mutex_destroy(&(data->dead_lock));
-	pthread_mutex_destroy(&(data->eat_lock));
 }
 
 // main process where death can be checked

@@ -6,7 +6,7 @@
 /*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:18:31 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/11 22:24:05 by alistair         ###   ########.fr       */
+/*   Updated: 2022/05/11 22:28:54 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,19 +44,4 @@ void	spend_time(t_data *data, long long stuff_time)
 			break ;
 		usleep(50);
 	}
-}
-
-void	tidy_up(t_data *data, t_philo *philos)
-{
-	int	i;
-
-	i = -1;
-	while (++i < data->n_philo)
-		pthread_join(philos[i].thread_id, NULL);
-	i = -1;
-	while (++i < data->n_philo)
-		pthread_mutex_destroy(&(data->fork_array[i]));
-	pthread_mutex_destroy(&(data->print_lock));
-	pthread_mutex_destroy(&(data->dead_lock));
-	pthread_mutex_destroy(&(data->eat_lock));
 }

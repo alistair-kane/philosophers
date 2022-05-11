@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/11 16:55:34 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/11 22:21:49 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,11 +56,10 @@ int			set_table(t_data *data, int argc, char **argv);
 long long	get_time(void);
 void		print_message(t_philo *philo, char *msg);
 void		clear_table(t_data *data);
-void		do_stuff(t_data *data, long long stuff_time);
-void		check_dead(t_philo philo);
-int			check_df(t_data *data);
-int 		chk_phm(t_philo philo);
-int			check_total_eat(t_data *data);
-// void		eating(t_philo *philo);
+void		spend_time(t_data *data, long long stuff_time);
+void		chk_any_deaths(t_philo philo);
+int			chk_dead(t_data *data);
+int			chk_ph_meals(t_philo philo);
+int			chk_total_eat(t_data *data);
 
 #endif

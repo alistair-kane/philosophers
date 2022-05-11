@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/11 18:43:05 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/11 22:28:13 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 # include <pthread.h>
 # include <stdio.h> 
 # include <stdint.h>
-# include <stdlib.h>
 # include <sys/time.h>
 # include <time.h>
 # include <unistd.h>
@@ -55,11 +54,11 @@ long		ft_atoi(const char *nptr);
 int			set_table(t_data *data, int argc, char **argv);
 long long	get_time(void);
 void		print_message(t_philo *philo, char *msg);
-void		clear_table(t_data *data);
-void		do_stuff(t_data *data, long long stuff_time);
+void		spend_time(t_data *data, long long stuff_time);
 void		chk_any_deaths(t_philo philo);
 int			chk_dead(t_data *data);
 int			chk_ph_meals(t_philo philo);
 int			chk_total_eat(t_data *data);
+void		tidy_up(t_data *data, t_philo *philos);
 
 #endif
