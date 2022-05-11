@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse_init.c                                       :+:      :+:    :+:   */
+/*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:14:51 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/10 18:13:05 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/11 02:40:30 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,10 @@ static int	convert(long temp_l)
 {
 	if (temp_l > INT32_MAX || temp_l < 1)
 		return (0);
-	return((int)temp_l);
+	return ((int)temp_l);
 }
 
-static int	check_input(int	argc, char **argv)
+static int	check_input(int argc, char **argv)
 {
 	int	tt_die;
 	int	tt_eat;
@@ -27,30 +27,28 @@ static int	check_input(int	argc, char **argv)
 
 	if (argc >= 5 && argc <= 6)
 	{
-		if (ft_atoi(argv[1]) > 255 || ft_atoi(argv[1]) < 1)
+		if (ft_atoi(argv[1]) > 250 || ft_atoi(argv[1]) < 1)
 			return (1);
 		tt_die = convert(ft_atoi(argv[2]));
 		tt_eat = convert(ft_atoi(argv[3]));
 		tt_sleep = convert(ft_atoi(argv[4]));
 		if (tt_die == 0 || tt_eat == 0 || tt_sleep == 0)
 			return (1);
-		// need to check if optional arg is passed
 		if (argv[5] != NULL)
 		{
 			if (convert(ft_atoi(argv[5])) == 0)
 				return (1);
 		}
+		return (0);
 	}
-	else
-		return (1);
-	return (0);
+	return (1);
 }
 
 void	philo_init(t_data *data)
 {
 	int	i;
 
-	i = -1; // init the threads for the philosopher function
+	i = -1;
 	while (++i < data->n_philo)
 	{
 		data->philos[i].id = i;
@@ -65,7 +63,7 @@ void	philo_init(t_data *data)
 int	set_table(t_data *data, int argc, char **argv)
 {
 	int		i;
-	
+
 	if (check_input(argc, argv) == 1)
 		return (1);
 	data->n_philo = ft_atoi(argv[1]);
@@ -75,19 +73,15 @@ int	set_table(t_data *data, int argc, char **argv)
 	data->all_eaten = 0;
 	data->dead_flag = 0;
 	if (argv[5] != NULL)
-		data->n_meals = ft_atoi(argv[5]);
+		data->n_meal = ft_atoi(argv[5]);
 	else
-		data->n_meals = -1;
-
-	i = -1;
-	// init mutexes
+		data->n_meal = -1;
+	i = data->n_philo;
+	// init mutexs
 	while (++i < data->n_philo)
 		pthread_mutex_init(&(data->fork_array[i]), NULL); // check error?
 	pthread_mutex_init(&(data->print_lock), NULL); // check error?
 	pthread_mutex_init(&(data->meal_lock), NULL); // check error?
 	philo_init(data);
-	// i = -1;
-	// while (++i < data->n)
-	// 	pthread_join(data->thread_array[i], NULL);
 	return (0);
 }
