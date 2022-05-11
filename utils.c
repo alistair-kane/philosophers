@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:18:31 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/11 02:37:12 by alistair         ###   ########.fr       */
+/*   Updated: 2022/05/11 17:48:55 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	print_message(t_philo *philo, char *msg)
 
 	data = philo->data;
 	pthread_mutex_lock(&(data->print_lock));
-	if (data->dead_flag == 0)
+	// if (check_df(data) == 0)
 		printf("%lld %d %s \n", get_time() - data->start_ts, philo->id + 1, msg);
 	pthread_mutex_unlock(&(data->print_lock));
 }
@@ -38,14 +38,46 @@ void	check_dead(t_philo philo)
 	t_data	*data;
 
 	data = philo.data;
-	pthread_mutex_lock(&(data->meal_lock));
+	pthread_mutex_lock(&(data->dead_lock));
 	if ((get_time() - philo.last_meal) > data->tt_die)
 	{
 		print_message(&philo, "died");
 		data->dead_flag = 1;
 	}
-	pthread_mutex_unlock(&(data->meal_lock));
+	pthread_mutex_unlock(&(data->dead_lock));
 	usleep(100); // why sleep here?
+}
+
+int	check_df(t_data *data)
+{
+	int	temp;
+	
+	pthread_mutex_lock(&(data->dead_lock));
+	temp = data->dead_flag;
+	pthread_mutex_unlock(&(data->dead_lock));
+	return (temp);
+}
+
+int chk_phm(t_philo philo)
+{
+	t_data	*data;
+	int		temp;
+
+	data = philo.data;
+	pthread_mutex_lock(&(data->eat_lock));
+	temp = philo.n_eaten;
+	pthread_mutex_unlock(&(data->eat_lock));
+	return (temp);
+}
+
+int	check_total_eat(t_data *data)
+{
+	int	temp;
+	
+	pthread_mutex_lock(&(data->eat_lock));
+	temp = data->all_eaten;
+	pthread_mutex_unlock(&(data->eat_lock));
+	return (temp);
 }
 
 void	do_stuff(t_data *data, long long stuff_time)
@@ -53,29 +85,10 @@ void	do_stuff(t_data *data, long long stuff_time)
 	long long	start;
 
 	start = get_time();
-	while (data->dead_flag == 0)
+	while (check_df(data) == 0)
 	{
 		if (get_time() - start >= stuff_time)
 			break ;
-		usleep(10);
+		usleep(50);
 	}
-}
-
-void	eating(t_philo *philo)
-{
-	t_data	*data;
-
-	data = philo->data;
-	pthread_mutex_lock(&(data->fork_array[philo->left_fork]));
-	print_message(philo, "has taken a fork [L]");
-	pthread_mutex_lock(&(data->fork_array[philo->right_fork]));
-	print_message(philo, "has taken a fork [R]");
-	pthread_mutex_lock(&(data->meal_lock));
-	print_message(philo, "is eating");
-	philo->last_meal = get_time();
-	pthread_mutex_unlock(&(data->meal_lock));
-	do_stuff(data, data->tt_eat);
-	(philo->n_eaten)++;
-	pthread_mutex_unlock(&(data->fork_array[philo->left_fork]));
-	pthread_mutex_unlock(&(data->fork_array[philo->right_fork]));
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:14:51 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/11 02:40:30 by alistair         ###   ########.fr       */
+/*   Updated: 2022/05/11 17:27:48 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,12 +76,13 @@ int	set_table(t_data *data, int argc, char **argv)
 		data->n_meal = ft_atoi(argv[5]);
 	else
 		data->n_meal = -1;
-	i = data->n_philo;
+	i = -1;
 	// init mutexs
 	while (++i < data->n_philo)
 		pthread_mutex_init(&(data->fork_array[i]), NULL); // check error?
 	pthread_mutex_init(&(data->print_lock), NULL); // check error?
-	pthread_mutex_init(&(data->meal_lock), NULL); // check error?
+	pthread_mutex_init(&(data->dead_lock), NULL); // check error?
+	pthread_mutex_init(&(data->eat_lock), NULL); // check error?
 	philo_init(data);
 	return (0);
 }

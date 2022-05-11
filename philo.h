@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/11 02:39:27 by alistair         ###   ########.fr       */
+/*   Updated: 2022/05/11 16:55:34 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,8 @@ typedef struct s_data
 	int				dead_flag;
 	long long		start_ts;
 	pthread_mutex_t	print_lock;
-	pthread_mutex_t	meal_lock;
+	pthread_mutex_t	dead_lock;
+	pthread_mutex_t	eat_lock;
 	pthread_mutex_t	fork_array[250];
 	t_philo			philos[250];
 }				t_data;
@@ -57,6 +58,9 @@ void		print_message(t_philo *philo, char *msg);
 void		clear_table(t_data *data);
 void		do_stuff(t_data *data, long long stuff_time);
 void		check_dead(t_philo philo);
-void		eating(t_philo *philo);
+int			check_df(t_data *data);
+int 		chk_phm(t_philo philo);
+int			check_total_eat(t_data *data);
+// void		eating(t_philo *philo);
 
 #endif
