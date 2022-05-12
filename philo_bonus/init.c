@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:14:51 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/11 23:50:13 by alistair         ###   ########.fr       */
+/*   Updated: 2022/05/12 02:55:07 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,8 @@ static void	philo_init(t_data *data)
 	{
 		data->philos[i].id = i;
 		data->philos[i].n_eaten = 0;
-		data->philos[i].left_fork = i; //int
-		data->philos[i].right_fork = (i + 1) % data->n_philo; //int
+		// data->philos[i].left_fork = i; //int
+		// data->philos[i].right_fork = (i + 1) % data->n_philo; //int
 		data->philos[i].last_meal = 0;
 		data->philos[i].data = data;
 	}
@@ -111,7 +111,7 @@ int	set_table(t_data *data, int argc, char **argv)
 		if dead post in main thread of all forks?
 
 
-/*
+
 In the Bonus. 
 Every Philosopher has its own thread to check the lifetime.
 Because the Philosopher process is waiting for the fork semaphores.  

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/11 22:21:49 by alistair         ###   ########.fr       */
+/*   Updated: 2022/05/12 02:13:51 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,14 @@
 # include <sys/time.h>
 # include <time.h>
 # include <unistd.h>
+# include <sys/wait.h>
+
+# include <fcntl.h>
+# include <sys/stat.h>
+# include <semaphore.h>
+
+# define SEMAFORK "/semaphore_fork"
+# define SEM_PERMS (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP)
 
 struct	s_data;
 
