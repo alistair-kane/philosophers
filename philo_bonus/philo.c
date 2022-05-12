@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 23:26:03 by alistair          #+#    #+#             */
-/*   Updated: 2022/05/12 03:11:16 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/12 16:52:48 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,11 +37,41 @@ void	eating(t_philo *philo)
 
 static void	ph_func_child(t_philo *philo)
 {
-	// t_data	*data;
+	t_data	*data;
+    sem_t	*semafork;
+	int		i;
 
-	// data = philo->data;
-	
 	printf("I am child process #:[%d]\n",philo->id);
+	data = philo->data;
+	semafork = sem_open(SEMAFORK, O_RDWR);
+    if (semafork == SEM_FAILED) 
+	{
+        perror("sem_open(3) failed");
+        exit(EXIT_FAILURE);
+    }
+	i = -1;
+	while (++i < 2)
+    {
+        if (sem_wait(semafork) < 0) 
+		{
+            perror("sem_wait(3) failed on child");
+            continue;
+    	}
+        printf("PID %ld acquired fork [%d]\n", (long) getpid(), i);
+		print_message(philo, "has taken a fork");
+		spend_time(data, data->tt_eat);
+	}
+	i = -1;
+	while (++i < 2)
+	{
+		if (sem_post(semafork) < 0)
+		{
+			perror("sem_post(3) error on child");
+		}
+		usleep(1000);
+	}	
+    if (sem_close(semafork) < 0)
+		perror("sem_close(3) failed");
 
 	// if (data->n_philo == 1)
 	// {
@@ -58,7 +88,6 @@ static void	ph_func_child(t_philo *philo)
 	// 	print_message(philo, "is thinking");
 	// }
 	exit(0);
-	// return (NULL);
 }
 
 // place where the forking can be done instead of pthread create
@@ -72,20 +101,16 @@ static int	start_dinner(t_data *data)
 
 	philo = data->philos;
 	data->start_ts = get_time();
-	
 	sem_unlink(SEMAFORK);
-
 	semafork = sem_open(SEMAFORK, O_CREAT | O_EXCL, SEM_PERMS, data->n_philo);
 	if (semafork == SEM_FAILED)
 	{
-		// perror(errno);
-		printf("semafail\n :%d", errno);
-		return (1);
-		
+		printf("semafail:%d\n", errno);
+		return (1);	
 	}
 		
 
-	if (sem_close(semafork) < 0) 
+	if (sem_close(semafork) < 0) //closed in parent as we don't use it here
 	{
         sem_unlink(SEMAFORK);
         exit(EXIT_FAILURE);

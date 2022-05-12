@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/12 02:13:51 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/12 16:28:09 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 # include <sys/stat.h>
 # include <semaphore.h>
 
-# define SEMAFORK "/semaphore_fork"
+# define SEMAFORK "/semaphore_forks"
 # define SEM_PERMS (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP)
 
 struct	s_data;
