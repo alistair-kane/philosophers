@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:14:51 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/12 02:55:07 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/16 13:48:54 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,8 +104,8 @@ int	set_table(t_data *data, int argc, char **argv)
 	constant semaphore for each fork
 		wait to "take 'a Left' fork"
 		wait to "take 'a Right' fork"
-			make a thread to check this?
-			eat for the time
+			make a thread to check if the philo dead in the meantime
+			eat for the time <- 
 		post "the forks back"
 		
 		if dead post in main thread of all forks?

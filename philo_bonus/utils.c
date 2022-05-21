@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:18:31 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/11 22:28:54 by alistair         ###   ########.fr       */
+/*   Updated: 2022/05/14 11:44:37 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,44 @@ long long	get_time(void)
 	return (milliseconds);
 }
 
+sem_t	*open_take(char *sem_name)
+{
+	sem_t	*semaphore;
+
+	semaphore = sem_open(sem_name, O_RDWR);
+	if (semaphore == SEM_FAILED) 
+	{
+        perror("sem_open(3) failed");
+        exit(EXIT_FAILURE);
+    }
+	if (sem_wait(semaphore) < 0) // take the semaphore
+	{
+		perror("sem_wait(3) failed on print sema");
+		exit(EXIT_FAILURE);
+	}
+	return (semaphore);
+}
+
+void	release_sema(sem_t	*semaphore)
+{
+	if (sem_post(semaphore) < 0) // release the semaphore
+	{
+		perror("sem_post(3) error on child");
+		exit(EXIT_FAILURE);
+	}
+}
+
 void	print_message(t_philo *philo, char *msg)
 {
 	t_data	*data;
 
 	data = philo->data;
-	pthread_mutex_lock(&(data->print_lock));
+	data->print_lock = open_take(SEMA_PRINT);
+	// pthread_mutex_lock(&(data->print_lock)); no longer exists
 	if (data->dead_flag == 0)
 		printf("%lld %d %s \n", get_time() - data->start_ts, philo->id + 1, msg);
-	pthread_mutex_unlock(&(data->print_lock));
+	release_sema(data->print_lock); // release the print semaphore
+	// pthread_mutex_unlock(&(data->print_lock));
 }
 
 void	spend_time(t_data *data, long long stuff_time)

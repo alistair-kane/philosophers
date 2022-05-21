@@ -6,13 +6,13 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 19:04:09 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/11 19:04:31 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/16 13:33:28 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	chk_any_deaths(t_philo philo)
+void	chk_philo_death(t_philo philo)
 {
 	t_data	*data;
 

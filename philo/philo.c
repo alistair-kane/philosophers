@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 23:26:03 by alistair          #+#    #+#             */
-/*   Updated: 2022/05/11 22:25:09 by alistair         ###   ########.fr       */
+/*   Updated: 2022/05/16 13:39:38 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,11 +63,11 @@ static void	alive_loop(t_data *d, t_philo *p)
 {
 	int	i;
 
-	while (chk_total_eat(d) == 0)
+	while (chk_total_eat(d) == 0) 
 	{
 		i = -1;
 		while (++i < d->n_philo && (chk_dead(d) == 0))
-			chk_any_deaths(p[i]);
+			chk_philo_death(p[i]);
 		if (chk_dead(d) == 1)
 			break ;
 		i = 0;
