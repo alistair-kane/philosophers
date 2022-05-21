@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 19:04:09 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/14 12:01:07 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/21 19:00:27 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,25 +17,28 @@ int	chk_philo_death(t_philo philo)
 	t_data	*data;
 
 	data = philo.data;
+	// printf("philo: [%d] - last meal:[%lld] | current time:[%lld]\n", \
+	// 	philo.id, philo.last_meal, get_time());
 	if ((get_time() - philo.last_meal) > data->tt_die)
 	{
+		take_sem(data->dead_lock);
 		print_message(&philo, "died");
-		release_sema(data->dead_lock);
 		data->dead_flag = 1;
+		release_sema(data->dead_lock);
 		return (1);
 	}
 	return (0);
 }
 
-// int	chk_dead(t_data *data)
-// {
-// 	int		temp;
+int	chk_dead_flag(t_data *data)
+{
+	int		temp;
 
-// 	data->dead_lock = open_take(SEMA_DEATH);
-// 	temp = data->dead_flag;
-// 	release_sema(data->dead_lock);
-// 	return (temp);
-// }
+	take_sem(data->dead_lock);
+	temp = data->dead_flag;
+	release_sema(data->dead_lock);
+	return (temp);
+}
 
 // int	chk_ph_meals(t_philo philo)
 // {

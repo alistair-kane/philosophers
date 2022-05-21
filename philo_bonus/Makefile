@@ -1,6 +1,6 @@
-NAME	= philo
+NAME	= philo_bonus
 CC		= gcc
-CFLAGS	= -Wall -Werror -Wextra -g -pthread
+CFLAGS	= -Wall -Werror -Wextra -pthread #-fsanitize=thread -g
 SRCS	= philo.c init.c utils.c checks.c ft_atoi.c
 
 OBJS	= ${SRCS:.c=.o}

@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/14 12:02:58 by alkane           ###   ########.fr       */
+/*   Updated: 2022/05/21 19:00:36 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,14 +69,17 @@ int			set_table(t_data *data, int argc, char **argv);
 long long	get_time(void);
 void		print_message(t_philo *philo, char *msg);
 void		clear_table(t_data *data);
-void		spend_time(t_data *data, long long stuff_time);
+void		spend_time(t_philo philo, long long stuff_time);
+
 
 int			chk_philo_death(t_philo philo);
-int			chk_dead(t_data *data);
-int			chk_ph_meals(t_philo philo);
-int			chk_total_eat(t_data *data);
+int			chk_dead_flag(t_data *data);
 
-sem_t		*open_take(char *sem_name);
+// int			chk_ph_meals(t_philo philo);
+// int			chk_total_eat(t_data *data);
+
+sem_t		*open_sem(char *sem_name, int oflags, mode_t mode, int n);
+void		take_sem(sem_t *semaphore);
 void		release_sema(sem_t	*semaphore);
 
 #endif
