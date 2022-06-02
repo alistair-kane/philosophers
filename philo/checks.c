@@ -3,57 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   checks.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 19:04:09 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/16 13:33:28 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/02 07:14:15 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	chk_philo_death(t_philo philo)
+int	chk_philo_death(t_philo *philo)
 {
 	t_data	*data;
 
-	data = philo.data;
-	pthread_mutex_lock(&(data->dead_lock));
-	if ((get_time() - philo.last_meal) > data->tt_die)
+	data = philo->data;
+	if (philo->eating == 0 && get_time() > philo->limit)
 	{
-		print_message(&philo, "died");
-		data->dead_flag = 1;
+		print_message(philo, "died", 1);
+		pthread_mutex_lock(&(data->print_lock));
+		pthread_mutex_unlock(&(data->done_lock));
+		return (1);
 	}
-	pthread_mutex_unlock(&(data->dead_lock));
-}
-
-int	chk_dead(t_data *data)
-{
-	int	temp;
-
-	pthread_mutex_lock(&(data->dead_lock));
-	temp = data->dead_flag;
-	pthread_mutex_unlock(&(data->dead_lock));
-	return (temp);
-}
-
-int	chk_ph_meals(t_philo philo)
-{
-	t_data	*data;
-	int		temp;
-
-	data = philo.data;
-	pthread_mutex_lock(&(data->eat_lock));
-	temp = philo.n_eaten;
-	pthread_mutex_unlock(&(data->eat_lock));
-	return (temp);
-}
-
-int	chk_total_eat(t_data *data)
-{
-	int	temp;
-
-	pthread_mutex_lock(&(data->eat_lock));
-	temp = data->all_eaten;
-	pthread_mutex_unlock(&(data->eat_lock));
-	return (temp);
+	return (0);
 }

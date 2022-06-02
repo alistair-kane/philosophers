@@ -6,7 +6,7 @@
 /*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:14:51 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/11 21:44:29 by alistair         ###   ########.fr       */
+/*   Updated: 2022/06/02 07:59:42 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,12 @@ static void	philo_init(t_data *data)
 	i = -1;
 	while (++i < data->n_philo)
 	{
+		data->fork_states[i] = 0;
 		data->philos[i].id = i;
-		data->philos[i].n_eaten = 0;
 		data->philos[i].left_fork = i;
 		data->philos[i].right_fork = (i + 1) % data->n_philo;
-		data->philos[i].last_meal = 0;
+		data->philos[i].n_eaten = 0;
+		data->philos[i].eating = 0;
 		data->philos[i].data = data;
 	}
 }
@@ -66,13 +67,15 @@ static int	init_mutexs(t_data *data)
 
 	i = -1;
 	while (++i < data->n_philo)
+	{
 		if (pthread_mutex_init(&(data->fork_array[i]), NULL) == 1)
 			return (1);
+	}
 	if (pthread_mutex_init(&(data->print_lock), NULL) == 1)
 		return (1);
-	if (pthread_mutex_init(&(data->dead_lock), NULL) == 1)
+	if (pthread_mutex_init(&(data->done_lock), NULL) == 1)
 		return (1);
-	if (pthread_mutex_init(&(data->eat_lock), NULL) == 1)
+	if (pthread_mutex_init(&(data->meal_lock), NULL) == 1)
 		return (1);
 	return (0);
 }
@@ -85,14 +88,13 @@ int	set_table(t_data *data, int argc, char **argv)
 	data->tt_die = ft_atoi(argv[2]);
 	data->tt_eat = ft_atoi(argv[3]);
 	data->tt_sleep = ft_atoi(argv[4]);
-	data->all_eaten = 0;
-	data->dead_flag = 0;
 	if (argv[5] != NULL)
 		data->n_meal = ft_atoi(argv[5]);
 	else
 		data->n_meal = -1;
 	if (init_mutexs(data) == 1)
 		return (1);
+	data->done_flag = 0;
 	philo_init(data);
 	return (0);
 }
