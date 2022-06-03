@@ -6,7 +6,7 @@
 /*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 23:26:03 by alistair          #+#    #+#             */
-/*   Updated: 2022/06/02 08:09:08 by alistair         ###   ########.fr       */
+/*   Updated: 2022/06/03 13:44:32 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,10 +67,15 @@ int	eating(t_philo *philo)
 		data->done_flag++;
 		if (data->done_flag >= data->n_philo)
 		{
+			pthread_mutex_unlock(&(data->meal_lock));
 			pthread_mutex_lock(&(data->print_lock));
+			// pthread_mutex_lock(&(data->done_lock));
 			pthread_mutex_unlock(&(data->done_lock));
 		}
-		pthread_mutex_unlock(&(data->meal_lock));
+		else
+			pthread_mutex_unlock(&(data->meal_lock));
+		// else
+			// pthread_mutex_unlock(&(data->done_lock));
 		return (1);
 	}
 	return (0);
@@ -107,7 +112,9 @@ static void	*ph_func(void *arg)
 	while (1)
 	{
 		if (pick_up_forks(philo) || eating(philo) || put_down_forks(philo))
+		{
 			break ;
+		}
 	}
 	return (NULL);
 }
