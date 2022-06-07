@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/06/06 22:25:19 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/07 19:37:41 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,9 @@ typedef struct s_philo
 {
 	int				id;
 	int				n_eaten;
-
 	long long		last_meal;
-	
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
-	
 	pthread_mutex_t	checking;
 	pthread_t		thread_id;
 	struct s_data	*data;
@@ -56,15 +53,11 @@ typedef struct s_data
 
 long		ft_atoi(const char *nptr);
 int			set_table(t_data *data, int argc, char **argv);
+void		spend_time(long long time_ms);
 long long	get_time(void);
 void		print_message(t_philo *philo, char *msg);
-void		spend_time(long long time_ms);
-int			chk_philo_death(t_philo *philo);
 int			tidy_up(t_data *data);
-
-void    	*monitor_thread(void *arg);
-void    	*monitor_thread_eat(void *arg);
-
-
+void		*monitor_thread(void *arg);
+void		*monitor_thread_eat(void *arg);
 
 #endif

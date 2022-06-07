@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 23:26:03 by alistair          #+#    #+#             */
-/*   Updated: 2022/06/07 00:28:02 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/07 19:32:13 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,8 @@ void	eat(t_philo *philo)
 	philo->last_meal = get_time();
 	pthread_mutex_lock(&(data->done_lock));
 	if (data->done_flag == 0)
-		printf("%lld\t%d\t %s\n", get_time() - data->start_t, \
+		printf("%lld\t%d\t%s\n", get_time() - data->start_t, \
 			philo->id + 1, "is eating");
-		// print_message(philo, "is eating");
 	philo->n_eaten += 1;
 	if (philo->n_eaten == data->n_meal)
 		data->philos_done_eating += 1;
@@ -57,11 +56,11 @@ static void	*ph_func(void *arg)
 	philo = arg;
 	data = philo->data;
 	if (philo->id % 2 == 0)
-		usleep(data->tt_eat * 1000);	
-	// sleep for one meal time if...
+		usleep(data->tt_eat * 1000);
+	// sleep for one meal time if the current philo is odd numbered to alternate
 	while (philo->data->done_flag == 0)
 	{
-		pick_up_forks(philo); 
+		pick_up_forks(philo);
 		eat(philo);
 		sleeping_thinking(philo);
 	}
@@ -78,7 +77,8 @@ static int	start_dinner(t_data *data)
 	while (i < data->n_philo)
 	{
 		data->philos[i].last_meal = data->start_t;
-		if (pthread_create(&data->philos[i].thread_id, NULL, ph_func, &data->philos[i]))
+		if (pthread_create(&data->philos[i].thread_id, NULL, \
+			ph_func, &data->philos[i]))
 			return (1);
 		pthread_create(&monitor, NULL, monitor_thread, &data->philos[i]);
 		pthread_detach(monitor);

@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:18:31 by alkane            #+#    #+#             */
-/*   Updated: 2022/06/06 22:55:28 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/07 19:29:42 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	print_message(t_philo *philo, char *msg)
 	data = philo->data;
 	pthread_mutex_lock(&(data->done_lock));
 	if (data->done_flag == 0)
-		printf("%lld %d %s \n", get_time() - data->start_t, philo->id + 1, msg);
+		printf("%lld\t%d\t%s \n", get_time() - data->start_t, philo->id + 1, msg);
 	pthread_mutex_unlock(&(data->done_lock));
 }
 
