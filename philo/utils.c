@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:18:31 by alkane            #+#    #+#             */
-/*   Updated: 2022/06/02 22:15:58 by alistair         ###   ########.fr       */
+/*   Updated: 2022/06/06 22:55:28 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,16 +22,15 @@ long long	get_time(void)
 	return (milliseconds);
 }
 
-void	print_message(t_philo *philo, char *msg, int action)
+void	print_message(t_philo *philo, char *msg)
 {
 	t_data	*data;
 
 	data = philo->data;
-	pthread_mutex_lock(&(data->print_lock));
-	if (action)
-		printf("%lld %d %s \n", get_time() - data->start_ts, philo->id + 1, "has died");	
-	printf("%lld %d %s \n", get_time() - data->start_ts, philo->id + 1, msg);
-	pthread_mutex_unlock(&(data->print_lock));
+	pthread_mutex_lock(&(data->done_lock));
+	if (data->done_flag == 0)
+		printf("%lld %d %s \n", get_time() - data->start_t, philo->id + 1, msg);
+	pthread_mutex_unlock(&(data->done_lock));
 }
 
 void	spend_time(long long time_ms)
@@ -43,13 +42,18 @@ void	spend_time(long long time_ms)
 		usleep(time_ms / 1000);
 }
 
-void	tidy_up(t_data *data)
+int	tidy_up(t_data *data)
 {
 	int	i;
 
-	i = -1;
-	while (++i < data->n_philo)
-		pthread_mutex_destroy(&(data->fork_array[i]));
-	pthread_mutex_destroy(&(data->print_lock));
-	pthread_mutex_destroy(&(data->done_lock));
+	i = 0;
+	while (i < data->n_philo)
+	{
+		pthread_join(data->philos[i].thread_id, NULL);
+		pthread_mutex_destroy(&(data->philos[i++].checking));
+	}
+	i = 0;
+	while (i < data->n_philo)
+		pthread_mutex_destroy(&(data->fork_array[i++]));
+	return (0);
 }

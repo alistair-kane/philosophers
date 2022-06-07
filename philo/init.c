@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:14:51 by alkane            #+#    #+#             */
-/*   Updated: 2022/06/02 22:32:24 by alistair         ###   ########.fr       */
+/*   Updated: 2022/06/06 22:31:44 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,39 +44,30 @@ static int	check_input(int argc, char **argv)
 	return (1);
 }
 
-static void	philo_init(t_data *data)
+static int	philo_init(t_data *data)
 {
 	int	i;
-
-	i = -1;
-	while (++i < data->n_philo)
-	{
-		data->fork_states[i] = 0;
-		data->philos[i].id = i;
-		data->philos[i].left_fork = i;
-		data->philos[i].right_fork = (i + 1) % data->n_philo;
-		data->philos[i].n_eaten = 0;
-		data->philos[i].eating = 0;
-		data->philos[i].data = data;
-	}
-}
-
-static int	init_mutexs(t_data *data)
-{
-	int	i;
-
-	i = -1;
-	while (++i < data->n_philo)
-	{
-		if (pthread_mutex_init(&(data->fork_array[i]), NULL) == 1)
-			return (1);
-	}
-	if (pthread_mutex_init(&(data->print_lock), NULL) == 1)
-		return (1);
+	int	n;
+	
 	if (pthread_mutex_init(&(data->done_lock), NULL) == 1)
 		return (1);
-	if (pthread_mutex_init(&(data->meal_lock), NULL) == 1)
-		return (1);
+	i = 0;
+	n = data->n_philo;	
+	while (i < n)
+	{
+		data->philos[i].id = i;
+		if (pthread_mutex_init(&(data->fork_array[i]), NULL) == 1)
+			return (1);
+		if (pthread_mutex_init(&(data->philos[i].checking), NULL) == 1)
+			return (1);
+		if (i == 0)
+			data->philos[i].left_fork = &(data->fork_array[n - 1]);
+		else
+			data->philos[i].left_fork = &(data->fork_array[i - 1]);
+		data->philos[i].right_fork = &(data->fork_array[i]);
+		data->philos[i].data = data;
+		++i;
+	}
 	return (0);
 }
 
@@ -92,9 +83,8 @@ int	set_table(t_data *data, int argc, char **argv)
 		data->n_meal = ft_atoi(argv[5]);
 	else
 		data->n_meal = -1;
-	if (init_mutexs(data) == 1)
-		return (1);
 	data->done_flag = 0;
-	philo_init(data);
+	if (philo_init(data) == 1)
+		return (1);
 	return (0);
 }
