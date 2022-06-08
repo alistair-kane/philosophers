@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/06/07 19:37:41 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/08 00:19:11 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,5 +59,6 @@ void		print_message(t_philo *philo, char *msg);
 int			tidy_up(t_data *data);
 void		*monitor_thread(void *arg);
 void		*monitor_thread_eat(void *arg);
+int			check_done_flag(t_data *data);
 
 #endif

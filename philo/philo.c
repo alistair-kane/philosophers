@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 23:26:03 by alistair          #+#    #+#             */
-/*   Updated: 2022/06/07 19:32:13 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/08 01:31:12 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,9 @@ static void	*ph_func(void *arg)
 	if (philo->id % 2 == 0)
 		usleep(data->tt_eat * 1000);
 	// sleep for one meal time if the current philo is odd numbered to alternate
-	while (philo->data->done_flag == 0)
+	
+	// while (philo->data->done_flag == 0)
+	while (check_done_flag(data) == 0)
 	{
 		pick_up_forks(philo);
 		eat(philo);
