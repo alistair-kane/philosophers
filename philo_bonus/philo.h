@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/06/08 13:57:11 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/08 23:10:09 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,8 @@ typedef struct s_data
 	sem_t			*print_lock;
 	sem_t			*forks;
 	sem_t			*finished;
+	pthread_t		few;
+	pthread_t		fw;
 }					t_data;
 
 // libft
@@ -71,14 +73,19 @@ char		*ft_itoa(int n);
 char		*ft_strjoin(char const *s1, char const *s2);
 size_t		ft_strlen(const char *s);
 
-int			set_table(t_data *data, int argc, char **argv);
+int			check_input(int argc, char **argv);
+void		philo_init(t_data *data);
+
 long long	get_time(void);
 void		print_message(t_philo *philo, char *msg);
 void		spend_time(long long stuff_time);
 
-void		*monitor_thread(void *arg);
-void		*monitor_thread_eat(void *arg);
-void		*monitor_finish(void *arg);
-int			tidy_up(t_data *data);
+void		*waiter_thread(void *arg);
+void		*finish_eating_waiter(void *arg);
+void		*finish_waiter(void *arg);
+
+void		ph_func(t_philo *philo);
+
+void		tidy_up(t_data *data);
 
 #endif

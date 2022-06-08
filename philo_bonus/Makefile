@@ -1,7 +1,7 @@
 NAME	= philo_bonus
 CC		= gcc
 CFLAGS	= -Wall -Werror -Wextra -pthread -fsanitize=thread
-SRCS	= philo.c init.c utils.c checks.c libft/ft_atoi.c libft/ft_calloc.c libft/ft_itoa.c \
+SRCS	= main.c philo.c init.c utils.c waiters.c libft/ft_atoi.c libft/ft_calloc.c libft/ft_itoa.c \
 libft/ft_strjoin.c libft/ft_strlen.c
 
 OBJS	= ${SRCS:.c=.o}

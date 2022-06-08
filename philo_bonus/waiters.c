@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   checks.c                                           :+:      :+:    :+:   */
+/*   waiters.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 19:04:09 by alkane            #+#    #+#             */
-/*   Updated: 2022/06/08 13:53:48 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/08 23:05:24 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	*monitor_thread(void *arg)
+void	*waiter_thread(void *arg)
 {
 	t_philo	*philo;
 	t_data	*data;
@@ -25,7 +25,7 @@ void	*monitor_thread(void *arg)
 		sem_wait(data->print_lock);
 		if ((get_time() - philo->last_meal) > data->tt_die)
 		{
-			printf("%lld %d died", get_time() - data->start_ts, philo->id + 1);
+			printf("%lld\t%d\t%s\n", get_time() - data->start_ts, philo->id + 1, "died");
 			sem_post(data->done_lock);
 			return (NULL);
 		}
@@ -35,7 +35,7 @@ void	*monitor_thread(void *arg)
 	return (NULL);
 }
 
-void	*monitor_thread_eat(void *arg)
+void	*finish_eating_waiter(void *arg)
 {
 	t_data	*data;
 	int		i;
@@ -48,15 +48,15 @@ void	*monitor_thread_eat(void *arg)
 	return (NULL);
 }
 
-void	*monitor_finish(void *arg)
+void	*finish_waiter(void *arg)
 {
 	t_data	*data;
 	int		i;
 	
 	data = arg;
 	sem_wait(data->done_lock);
-	i = 0;
-	while (i < data->n_philo)
-		kill(data->philos[i++].pid, SIGTERM);
+	i = -1;
+	while (++i < data->n_philo)
+		kill(data->philos[i].pid, SIGTERM);
 	return (NULL);
 }

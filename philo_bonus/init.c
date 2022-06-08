@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:14:51 by alkane            #+#    #+#             */
-/*   Updated: 2022/06/08 13:48:03 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/08 22:55:34 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static int	convert(long temp_l)
 	return ((int)temp_l);
 }
 
-static int	check_input(int argc, char **argv)
+int	check_input(int argc, char **argv)
 {
 	int	tt_die;
 	int	tt_eat;
@@ -68,7 +68,7 @@ static char *create_name(int id)
 	return (ret);
 }
 
-static void	philo_init(t_data *data)
+void	philo_init(t_data *data)
 {
 	int	i;
 
@@ -86,21 +86,7 @@ static void	philo_init(t_data *data)
 	}
 }
 
-int	set_table(t_data *data, int argc, char **argv)
-{
-	if (check_input(argc, argv) == 1)
-		return (1);
-	data->n_philo = ft_atoi(argv[1]);
-	data->tt_die = ft_atoi(argv[2]);
-	data->tt_eat = ft_atoi(argv[3]);
-	data->tt_sleep = ft_atoi(argv[4]);
-	if (argv[5] != NULL)
-		data->n_meal = ft_atoi(argv[5]);
-	else
-		data->n_meal = -1;
-	philo_init(data);
-	return (0);
-}
+
 
 
 /*

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:18:31 by alkane            #+#    #+#             */
-/*   Updated: 2022/06/08 13:53:48 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/08 23:11:26 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,31 +22,13 @@ long long	get_time(void)
 	return (milliseconds);
 }
 
-void	take_sem(sem_t *semaphore)
-{
-	if (sem_wait(semaphore) < 0) // take the semaphore
-	{
-		perror("sem_wait(3) failed");
-		exit(EXIT_FAILURE);
-	}
-}
-
-void	release_sema(sem_t	*semaphore)
-{
-	if (sem_post(semaphore) < 0) // release the semaphore
-	{
-		perror("sem_post(3) error on child");
-		exit(EXIT_FAILURE);
-	}
-}
-
 void	print_message(t_philo *philo, char *msg)
 {
 	t_data	*data;
 
 	data = philo->data;
 	sem_wait(data->print_lock);
-	printf("%lld %d %s \n", get_time() - data->start_ts, philo->id + 1, msg);
+	printf("%lld\t%d\t%s\n", get_time() - data->start_ts, philo->id + 1, msg);
 	sem_post(data->print_lock); // release the print semaphore
 }
 
@@ -59,13 +41,13 @@ void	spend_time(long long time_ms)
 		usleep(time_ms / 1000);
 }
 
-int	tidy_up(t_data *data)
+void	tidy_up(t_data *data)
 {
 	int	i;
 	int	status;
 
-	i = 0;
-	while (i < data->n_philo)
+	i = -1;
+	while (++i < data->n_philo)
 	{
 		waitpid(data->philos[i].pid, &status, 0);
 		sem_close(data->philos[i].checking);
@@ -75,5 +57,4 @@ int	tidy_up(t_data *data)
 	sem_close(data->print_lock);
 	sem_close(data->forks);
 	sem_close(data->finished);
-	return (0);
 }
