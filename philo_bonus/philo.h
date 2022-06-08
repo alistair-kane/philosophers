@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/21 19:00:36 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/08 13:57:11 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,14 @@
 # include <fcntl.h>
 # include <sys/stat.h>
 # include <semaphore.h>
+# include <signal.h>
 
-# define SEMAFORK "/semaphore_forks"
+# define SEMA_DONE "/semaphore_done"
 # define SEMA_PRINT "/semaphore_print"
-# define SEMA_THREAD "/semaphore_thread"
-# define SEMA_DEATH "/semaphore_death"
-# define SEM_PERMS (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP)
+# define SEMAFORKS "/semaphore_forks"
+# define SEMA_FINISHED "/semaphore_thread"
+
+# define PHILO_PREFIX "ph_"
 
 struct	s_data;
 
@@ -38,11 +40,11 @@ typedef struct s_philo
 {
 	int				id;
 	int				n_eaten;
-	int				left_fork;
-	int				right_fork;
 	long long		last_meal;
+	char			*name;
+	sem_t			*checking;
+	pid_t			pid;
 	struct s_data	*data;
-	pthread_t		thread_id;
 }					t_philo;
 
 typedef struct s_data
@@ -51,35 +53,32 @@ typedef struct s_data
 	int				tt_die;
 	int				tt_eat;
 	int				tt_sleep;
-	int				all_eaten;
 	int				n_meal;
-	int				dead_flag;
+	int				philos_done_eating;
+	int				done_flag;
 	long long		start_ts;
-	
-	sem_t			*print_lock;
-	sem_t			*thread_lock;
-	sem_t			*dead_lock;
-	
-	sem_t			*semaforks;
 	t_philo			philos[250];
-}				t_data;	
+	sem_t			*done_lock;
+	sem_t			*print_lock;
+	sem_t			*forks;
+	sem_t			*finished;
+}					t_data;
 
+// libft
 long		ft_atoi(const char *nptr);
+void		*ft_calloc(size_t nmemb, size_t size);
+char		*ft_itoa(int n);
+char		*ft_strjoin(char const *s1, char const *s2);
+size_t		ft_strlen(const char *s);
+
 int			set_table(t_data *data, int argc, char **argv);
 long long	get_time(void);
 void		print_message(t_philo *philo, char *msg);
-void		clear_table(t_data *data);
-void		spend_time(t_philo philo, long long stuff_time);
+void		spend_time(long long stuff_time);
 
-
-int			chk_philo_death(t_philo philo);
-int			chk_dead_flag(t_data *data);
-
-// int			chk_ph_meals(t_philo philo);
-// int			chk_total_eat(t_data *data);
-
-sem_t		*open_sem(char *sem_name, int oflags, mode_t mode, int n);
-void		take_sem(sem_t *semaphore);
-void		release_sema(sem_t	*semaphore);
+void		*monitor_thread(void *arg);
+void		*monitor_thread_eat(void *arg);
+void		*monitor_finish(void *arg);
+int			tidy_up(t_data *data);
 
 #endif

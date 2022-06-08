@@ -6,11 +6,11 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 21:01:58 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/11 19:05:29 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/08 13:55:19 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "../philo.h"
 
 static int	is_space(char ch)
 {

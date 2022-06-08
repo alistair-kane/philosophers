@@ -6,56 +6,57 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 19:04:09 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/21 19:00:27 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/08 13:53:48 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	chk_philo_death(t_philo philo)
+void	*monitor_thread(void *arg)
 {
+	t_philo	*philo;
 	t_data	*data;
 
-	data = philo.data;
-	// printf("philo: [%d] - last meal:[%lld] | current time:[%lld]\n", \
-	// 	philo.id, philo.last_meal, get_time());
-	if ((get_time() - philo.last_meal) > data->tt_die)
+	philo = arg;
+	data = philo->data;
+	while (1)
 	{
-		take_sem(data->dead_lock);
-		print_message(&philo, "died");
-		data->dead_flag = 1;
-		release_sema(data->dead_lock);
-		return (1);
+		sem_wait(philo->checking);
+		sem_wait(data->print_lock);
+		if ((get_time() - philo->last_meal) > data->tt_die)
+		{
+			printf("%lld %d died", get_time() - data->start_ts, philo->id + 1);
+			sem_post(data->done_lock);
+			return (NULL);
+		}
+		sem_post(data->print_lock);
+		sem_post(philo->checking);
 	}
-	return (0);
+	return (NULL);
 }
 
-int	chk_dead_flag(t_data *data)
+void	*monitor_thread_eat(void *arg)
 {
-	int		temp;
+	t_data	*data;
+	int		i;
 
-	take_sem(data->dead_lock);
-	temp = data->dead_flag;
-	release_sema(data->dead_lock);
-	return (temp);
+	data = arg;
+	i = -1;
+	while (++i < data->n_philo)
+		sem_wait(data->finished);
+	sem_post(data->done_lock);
+	return (NULL);
 }
 
-// int	chk_ph_meals(t_philo philo)
-// {
-// 	t_data	*data;
-// 	int		temp;
-
-// 	data = philo.data;
-// 	pthread_mutex_lock(&(data->eat_lock));
-// 	temp = philo.n_eaten;
-// 	return (temp);
-// }
-
-// int	chk_total_eat(t_data *data)
-// {
-// 	int	temp;
-
-// 	pthread_mutex_lock(&(data->eat_lock));
-// 	temp = data->all_eaten;
-// 	return (temp);
-// }
+void	*monitor_finish(void *arg)
+{
+	t_data	*data;
+	int		i;
+	
+	data = arg;
+	sem_wait(data->done_lock);
+	i = 0;
+	while (i < data->n_philo)
+		kill(data->philos[i++].pid, SIGTERM);
+	return (NULL);
+}

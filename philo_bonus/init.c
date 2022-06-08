@@ -6,11 +6,24 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:14:51 by alkane            #+#    #+#             */
-/*   Updated: 2022/05/16 13:48:54 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/08 13:48:03 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+static sem_t	*open_sem(char *sem_name, int n)
+{
+	sem_t	*semaphore;
+	mode_t	mode;
+
+	mode = (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
+	semaphore = sem_open(sem_name, O_CREAT | O_EXCL, mode, n);
+	if (semaphore != SEM_FAILED) 
+		return (semaphore);
+	sem_unlink(sem_name);
+	return (sem_open(sem_name, O_CREAT | O_EXCL, mode, n));
+}
 
 static int	convert(long temp_l)
 {
@@ -44,38 +57,34 @@ static int	check_input(int argc, char **argv)
 	return (1);
 }
 
+static char *create_name(int id)
+{
+	char	*id_str;
+	char	*ret;
+
+	id_str = ft_itoa(id);
+	ret = ft_strjoin(PHILO_PREFIX, id_str);
+	free(id_str);
+	return (ret);
+}
+
 static void	philo_init(t_data *data)
 {
 	int	i;
 
+	data->done_lock = open_sem(SEMA_DONE, 0);
+	data->print_lock = open_sem(SEMA_PRINT, 1);
+	data->forks = open_sem(SEMAFORKS, data->n_philo + 1);
+	data->finished = open_sem(SEMA_FINISHED, 0);
 	i = -1;
 	while (++i < data->n_philo)
 	{
+		data->philos[i].name = create_name(i);
+		data->philos[i].checking = open_sem(data->philos[i].name, 1);
 		data->philos[i].id = i;
-		data->philos[i].n_eaten = 0;
-		// data->philos[i].left_fork = i; //int
-		// data->philos[i].right_fork = (i + 1) % data->n_philo; //int
-		data->philos[i].last_meal = 0;
 		data->philos[i].data = data;
 	}
 }
-
-// static int	init_mutexs(t_data *data)
-// {
-// 	int	i;
-
-// 	i = -1;
-// 	while (++i < data->n_philo)
-// 		if (pthread_mutex_init(&(data->fork_array[i]), NULL) == 1)
-// 			return (1);
-// 	if (pthread_mutex_init(&(data->print_lock), NULL) == 1)
-// 		return (1);
-// 	if (pthread_mutex_init(&(data->dead_lock), NULL) == 1)
-// 		return (1);
-// 	if (pthread_mutex_init(&(data->eat_lock), NULL) == 1)
-// 		return (1);
-// 	return (0);
-// }
 
 int	set_table(t_data *data, int argc, char **argv)
 {
@@ -85,16 +94,10 @@ int	set_table(t_data *data, int argc, char **argv)
 	data->tt_die = ft_atoi(argv[2]);
 	data->tt_eat = ft_atoi(argv[3]);
 	data->tt_sleep = ft_atoi(argv[4]);
-	
-
-	data->all_eaten = 0; // needs to be semaphore?
-	data->dead_flag = 0; // needs to be semaphore?
 	if (argv[5] != NULL)
 		data->n_meal = ft_atoi(argv[5]);
 	else
 		data->n_meal = -1;
-	// if (init_mutexs(data) == 1)
-		// return (1);
 	philo_init(data);
 	return (0);
 }

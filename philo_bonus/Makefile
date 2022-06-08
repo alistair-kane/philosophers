@@ -1,7 +1,8 @@
 NAME	= philo_bonus
 CC		= gcc
-CFLAGS	= -Wall -Werror -Wextra -pthread #-fsanitize=thread -g
-SRCS	= philo.c init.c utils.c checks.c ft_atoi.c
+CFLAGS	= -Wall -Werror -Wextra -pthread -fsanitize=thread
+SRCS	= philo.c init.c utils.c checks.c libft/ft_atoi.c libft/ft_calloc.c libft/ft_itoa.c \
+libft/ft_strjoin.c libft/ft_strlen.c
 
 OBJS	= ${SRCS:.c=.o}
 BONUS_OBJS	= ${BONUS:.c=.o}

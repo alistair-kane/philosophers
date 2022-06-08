@@ -6,150 +6,97 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 23:26:03 by alistair          #+#    #+#             */
-/*   Updated: 2022/05/21 19:09:50 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/08 14:07:20 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-#include "errno.h"
-
-void	*ph_monitor(void *arg)
+void	pick_up_forks(t_philo *philo)
 {
-	t_philo	*philo;
-	t_data	*data;
-
-	philo = (t_philo *)arg;
-	data = philo->data;
-	// printf("I am monitoring thread #:[%d]\n",philo->id + 1);
-	while (1)
-	{
-		take_sem(data->thread_lock);
-		if ((get_time() - philo->last_meal) > data->tt_die)
-		{
-			take_sem(data->dead_lock);
-			printf("%lld %d died", get_time() - data->start_ts, philo->id + 1);
-			// print_message(&philo, "died");
-			data->dead_flag = 1;
-			release_sema(data->dead_lock);
-			break ;
-		}
-		release_sema(data->thread_lock);
-	}
-	release_sema(data->thread_lock);
-	return (NULL);
+	sem_wait(philo->data->forks);
+	print_message(philo, "has taken a fork [L]");
+	sem_wait(philo->data->forks);
+	print_message(philo, "has taken a fork [R]");
 }
 
-static void	ph_func_child(t_philo *philo)
+void	eat(t_philo *philo)
+{
+	t_data	*data;
+
+	data = philo->data;
+	sem_wait(philo->checking);
+	philo->last_meal = get_time();
+	print_message(philo, "has taken a fork [R]");
+	philo->n_eaten += 1;	
+	if (philo->n_eaten == data->n_meal)
+		sem_post(data->finished);
+	spend_time(data->tt_eat);
+	sem_post(data->forks);
+	sem_post(data->forks);
+	sem_post(philo->checking);
+}
+
+void	sleeping_thinking(t_philo *philo)
+{
+	print_message(philo, "is sleeping");
+	spend_time(philo->data->tt_sleep);
+	print_message(philo, "is thinking");
+}
+
+static void	ph_func(t_philo *philo)
 {
 	t_data		*data;
 	pthread_t	alive_check;
-	int		i;
 
-	printf("I am child philo process #:[%d]\n",philo->id + 1);
 	data = philo->data;
+	pthread_create(&alive_check, NULL, monitor_thread, philo);
 	if (philo->id % 2 == 0)
-		usleep(30000);
-	// data->semaforks = sem_open(SEMAFORK, O_RDWR);
-    // if (data->semaforks == SEM_FAILED)
-	// {
-    //     perror("sem_open(3) failed (fork)");
-    //     exit(EXIT_FAILURE);
-	// }
-	pthread_create(&alive_check, NULL, ph_monitor, (void *)philo); // check return of pthread create?
-	philo->last_meal = get_time();
-	take_sem(data->thread_lock);
-	while (chk_dead_flag(data) == 0)
+		usleep(data->tt_eat * 1000);
+	while (1)
 	{
-		release_sema(data->thread_lock);
-		
-		// eating
-		i = -1;
-		while (++i < 2)
-		{
-			if (sem_wait(data->semaforks) < 0) 
-			{
-				perror("sem_wait(3) failed on child");
-				exit(EXIT_FAILURE);
-			}
-			print_message(philo, "has taken a fork");
-		}
-		// here both forks have been accquired
-		philo->last_meal = get_time();
-		print_message(philo, "is eating");
-		spend_time(*philo, data->tt_eat);
-		// put the forks back down
-		i = -1;
-		while (++i < 2)
-		{
-			if (sem_post(data->semaforks) < 0)
-				perror("sem_post(3) error on child");
-			usleep(1000);
-		}
-		print_message(philo, "is sleeping");
-		spend_time(*philo, data->tt_sleep);
-		print_message(philo, "is thinking");
+		pick_up_forks(philo);
+		eat(philo);
+		sleeping_thinking(philo);
 	}
-	exit(0);
+	exit (0);
 }
 
 // place where the forking can be done instead of pthread create
-static int	start_dinner(t_data *data)
+static void	start_dinner(t_data *data)
 {
-	t_philo	*philo;
-	pid_t	pid;
-	int		i;
+	int	i;
 
-	philo = data->philos;
 	data->start_ts = get_time();
-	sem_unlink(SEMAFORK);
-	sem_unlink(SEMA_THREAD);
-	sem_unlink(SEMA_DEATH);
-	sem_unlink(SEMA_PRINT);
-	
-	data->semaforks = open_sem(SEMAFORK, O_CREAT, SEM_PERMS, data->n_philo);
-
-	data->thread_lock = open_sem(SEMA_THREAD, O_CREAT, SEM_PERMS, 1);
-	data->dead_lock = open_sem(SEMA_DEATH, O_CREAT, SEM_PERMS, 1);
-	data->print_lock = open_sem(SEMA_PRINT, O_CREAT, SEM_PERMS, 1);
-	if ((data->semaforks == SEM_FAILED) || (data->dead_lock == SEM_FAILED \
-		|| (data->print_lock == SEM_FAILED) || (data->thread_lock == SEM_FAILED)))
-	{
-		printf("semafail:%d\n", errno);
-		exit(EXIT_FAILURE);
-	}
-
-	// if (data->n_philo == 1)
-	// {
-	// 	print_message(philo, "has taken a fork [L]");
-	// 	return (NULL);
-	// }
 	i = -1;
 	while (++i < data->n_philo)
 	{
-		pid = fork();
-		if (pid < 0) // fork failed
-			return (1);
-		else if (pid == 0) // in child
-			ph_func_child(&philo[i]);
+		data->philos[i].last_meal = data->start_ts;
+		data->philos[i].pid = fork();
+		if (data->philos[i].pid < 0) // fork failed
+		{
+			perror("Fork failed");
+			exit(1);
+		}
+		else if (data->philos[i].pid == 0) // in child
+			return (ph_func(&data->philos[i]));
 	}
-	i = -1;
-	while (++i < data->n_philo)
-		waitpid(-1, NULL, 0);
-	
-	printf("[parent:]\tall children returned!\n");
-	// }
-	// alive_loop(data, data->philos);
-	// tidy_up(data, philo);
-	return (0);
 }
 
 int	main(int argc, char *argv[])
 {
-	t_data	data;
+	t_data		data;
+	pthread_t	monitor;
+
 	if (set_table(&data, argc, argv) == 1)
-		return (2);
-	if (start_dinner(&data) == 1)
+		return (1);
+	start_dinner(&data);
+	// back in parent
+	if (data.n_meal > 0)
+		pthread_create(&monitor, NULL, monitor_thread_eat, &data);
+	pthread_create(&monitor, NULL, monitor_finish, &data);
+
+	if (tidy_up(&data) == 1)
 		return (3);
 	return (0);
 }
