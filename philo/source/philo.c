@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 23:26:03 by alistair          #+#    #+#             */
-/*   Updated: 2022/06/09 12:30:44 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/09 21:04:21 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,9 @@
 static void	pick_up_forks(t_philo *philo)
 {
 	pthread_mutex_lock(philo->right_fork);
-	print_message(philo, "has taken a fork [L]");
+	print_message(philo, "🍽️  has taken a fork 👈");
 	pthread_mutex_lock(philo->left_fork);
-	print_message(philo, "has taken a fork [R]");
+	print_message(philo, "🍽️  has taken a fork 👉");
 }
 
 static void	eat(t_philo *philo)
@@ -30,7 +30,7 @@ static void	eat(t_philo *philo)
 	pthread_mutex_lock(&(data->done_lock));
 	if (data->done_flag == 0)
 		printf("%lld\t%d\t%s\n", get_time() - data->start_t, \
-			philo->id + 1, "is eating");
+			philo->id + 1, "🍝 is eating");
 	philo->n_eaten += 1;
 	if (philo->n_eaten == data->n_meal)
 		data->philos_done_eating += 1;
@@ -43,9 +43,9 @@ static void	eat(t_philo *philo)
 
 static void	sleeping_thinking(t_philo *philo)
 {
-	print_message(philo, "is sleeping");
+	print_message(philo, "😴 is sleeping");
 	spend_time(philo->data->tt_sleep);
-	print_message(philo, "is thinking");
+	print_message(philo, "🤔 is thinking");
 }
 
 void	*ph_func(void *arg)

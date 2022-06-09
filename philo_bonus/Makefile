@@ -1,6 +1,6 @@
 NAME	= philo_bonus
 CC		= gcc
-CFLAGS	= -Wall -Werror -Wextra -pthread -fsanitize=thread
+CFLAGS	= -Wall -Werror -Wextra -pthread # -fsanitize=thread -g
 SRCS	= source/main.c source/philo.c source/init.c source/utils.c source/waiters.c \
 source/libft/ft_atoi.c source/libft/ft_calloc.c source/libft/ft_itoa.c \
 source/libft/ft_strjoin.c source/libft/ft_strlen.c

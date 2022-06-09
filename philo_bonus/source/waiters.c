@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   waiters.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 19:04:09 by alkane            #+#    #+#             */
-/*   Updated: 2022/06/09 12:39:45 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/09 21:02:31 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	*waiter_thread(void *arg)
 		if ((get_time() - philo->last_meal) > data->tt_die)
 		{
 			printf("%lld\t%d\t%s\n", get_time() - data->start_ts, \
-				philo->id + 1, "died");
+				philo->id + 1, "☠️  died");
 			sem_post(data->done_lock);
 			return (NULL);
 		}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   waiters.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 19:04:09 by alkane            #+#    #+#             */
-/*   Updated: 2022/06/09 12:32:12 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/09 20:57:05 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,8 @@ void	*waiter_thread(void *arg)
 		time = get_time() - philo->last_meal;
 		if (time >= data->tt_die && data->done_flag == 0)
 		{
-			printf("%lld %d %s \n", get_time() - data->start_t,
-				philo->id + 1, "died");
+			printf("%lld\t%d\t%s\n", get_time() - data->start_t,
+				philo->id + 1, "☠️  died");
 			data->done_flag = 1;
 		}
 		pthread_mutex_unlock(&(data->done_lock));

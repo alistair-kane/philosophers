@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/08 22:51:52 by alistair          #+#    #+#             */
-/*   Updated: 2022/06/09 12:39:45 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/09 21:04:17 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,9 @@
 static void	pick_up_forks(t_philo *philo)
 {
 	sem_wait(philo->data->forks);
-	print_message(philo, "has taken a fork [L]");
+	print_message(philo, "🍽️  has taken a fork 👈");
 	sem_wait(philo->data->forks);
-	print_message(philo, "has taken a fork [R]");
+	print_message(philo, "🍽️  has taken a fork 👉");
 }
 
 static void	eat(t_philo *philo)
@@ -27,7 +27,7 @@ static void	eat(t_philo *philo)
 	data = philo->data;
 	sem_wait(philo->checking);
 	philo->last_meal = get_time();
-	print_message(philo, "is eating");
+	print_message(philo, "🍝 is eating");
 	philo->n_eaten += 1;
 	if (philo->n_eaten == data->n_meal)
 		sem_post(data->finished);
@@ -39,9 +39,9 @@ static void	eat(t_philo *philo)
 
 static void	sleeping_thinking(t_philo *philo)
 {
-	print_message(philo, "is sleeping");
+	print_message(philo, "😴 is sleeping");
 	spend_time(philo->data->tt_sleep);
-	print_message(philo, "is thinking");
+	print_message(philo, "🤔 is thinking");
 }
 
 void	ph_func(t_philo *philo)

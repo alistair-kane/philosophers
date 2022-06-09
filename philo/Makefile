@@ -1,6 +1,6 @@
 NAME	= philo
 CC		= gcc
-CFLAGS	= -Wall -Werror -Wextra -pthread #-fsanitize=thread
+CFLAGS	= -Wall -Werror -Wextra -pthread # -fsanitize=thread -g
 SRCS	= source/init.c source/main.c source/philo.c source/utils.c \
 source/waiters.c source/libft/ft_atoi.c
 
