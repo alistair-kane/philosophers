@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/08 22:51:52 by alistair          #+#    #+#             */
-/*   Updated: 2022/06/08 22:53:52 by alistair         ###   ########.fr       */
+/*   Updated: 2022/06/09 12:39:45 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 
 static void	pick_up_forks(t_philo *philo)
 {
@@ -28,7 +28,7 @@ static void	eat(t_philo *philo)
 	sem_wait(philo->checking);
 	philo->last_meal = get_time();
 	print_message(philo, "is eating");
-	philo->n_eaten += 1;	
+	philo->n_eaten += 1;
 	if (philo->n_eaten == data->n_meal)
 		sem_post(data->finished);
 	spend_time(data->tt_eat);

@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:14:51 by alkane            #+#    #+#             */
-/*   Updated: 2022/06/08 22:55:34 by alistair         ###   ########.fr       */
+/*   Updated: 2022/06/09 12:39:45 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 
 static sem_t	*open_sem(char *sem_name, int n)
 {
@@ -19,7 +19,7 @@ static sem_t	*open_sem(char *sem_name, int n)
 
 	mode = (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 	semaphore = sem_open(sem_name, O_CREAT | O_EXCL, mode, n);
-	if (semaphore != SEM_FAILED) 
+	if (semaphore != SEM_FAILED)
 		return (semaphore);
 	sem_unlink(sem_name);
 	return (sem_open(sem_name, O_CREAT | O_EXCL, mode, n));
@@ -30,6 +30,17 @@ static int	convert(long temp_l)
 	if (temp_l > INT32_MAX || temp_l < 1)
 		return (0);
 	return ((int)temp_l);
+}
+
+static char	*create_name(int id)
+{
+	char	*id_str;
+	char	*ret;
+
+	id_str = ft_itoa(id);
+	ret = ft_strjoin(PHILO_PREFIX, id_str);
+	free(id_str);
+	return (ret);
 }
 
 int	check_input(int argc, char **argv)
@@ -57,17 +68,6 @@ int	check_input(int argc, char **argv)
 	return (1);
 }
 
-static char *create_name(int id)
-{
-	char	*id_str;
-	char	*ret;
-
-	id_str = ft_itoa(id);
-	ret = ft_strjoin(PHILO_PREFIX, id_str);
-	free(id_str);
-	return (ret);
-}
-
 void	philo_init(t_data *data)
 {
 	int	i;
@@ -86,21 +86,7 @@ void	philo_init(t_data *data)
 	}
 }
 
-
-
-
 /*
-	constant semaphore for each fork
-		wait to "take 'a Left' fork"
-		wait to "take 'a Right' fork"
-			make a thread to check if the philo dead in the meantime
-			eat for the time <- 
-		post "the forks back"
-		
-		if dead post in main thread of all forks?
-
-
-
 In the Bonus. 
 Every Philosopher has its own thread to check the lifetime.
 Because the Philosopher process is waiting for the fork semaphores.  

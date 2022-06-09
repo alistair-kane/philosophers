@@ -6,11 +6,11 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 10:54:35 by alkane            #+#    #+#             */
-/*   Updated: 2022/06/08 12:52:10 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/09 12:39:45 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../philo.h"
+#include "../philo_bonus.h"
 
 static long long	conversion(int n)
 {

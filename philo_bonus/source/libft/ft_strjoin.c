@@ -6,11 +6,11 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 13:06:31 by alkane            #+#    #+#             */
-/*   Updated: 2022/06/08 12:52:13 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/09 12:39:45 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../philo.h"
+#include "../philo_bonus.h"
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {

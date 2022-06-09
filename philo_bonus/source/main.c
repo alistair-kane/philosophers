@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/02 23:26:03 by alistair          #+#    #+#             */
-/*   Updated: 2022/06/08 23:12:58 by alistair         ###   ########.fr       */
+/*   Updated: 2022/06/09 12:39:45 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 
 // place where the forking can be done instead of pthread create
 
@@ -40,32 +40,49 @@ static void	start_dinner(t_data *data)
 	{
 		data->philos[i].last_meal = data->start_ts;
 		data->philos[i].pid = fork();
-		if (data->philos[i].pid < 0) // fork failed
+		if (data->philos[i].pid < 0)
 		{
 			perror("Fork failed");
 			exit(1);
 		}
-		else if (data->philos[i].pid == 0) // in child
+		else if (data->philos[i].pid == 0)
 			return (ph_func(&data->philos[i]));
 	}
+}
+
+static void	tidy_up(t_data *data)
+{
+	int	i;
+	int	status;
+
+	i = -1;
+	while (++i < data->n_philo)
+	{
+		waitpid(data->philos[i].pid, &status, 0);
+		sem_close(data->philos[i].checking);
+		free(data->philos[i].name);
+	}
+	sem_close(data->done_lock);
+	sem_close(data->print_lock);
+	sem_close(data->forks);
+	sem_close(data->finished);
 }
 
 int	main(int argc, char *argv[])
 {
 	t_data		data;
-	pthread_t	few;
-	pthread_t	fw;
+	pthread_t	waiter;
 
 	if (set_table(&data, argc, argv) == 1)
 		return (1);
 	start_dinner(&data);
 	if (data.n_meal > 0)
 	{
-		pthread_create(&few, NULL, finish_eating_waiter, &data);
-		pthread_detach(few);		
+		pthread_create(&waiter, NULL, finish_eating_waiter, &data);
+		pthread_detach(waiter);
 	}
-	pthread_create(&fw, NULL, finish_waiter, &data);
-	pthread_detach(fw);
+	pthread_create(&waiter, NULL, finish_waiter, &data);
+	pthread_detach(waiter);
 	tidy_up(&data);
 	return (0);
 }

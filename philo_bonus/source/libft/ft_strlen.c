@@ -6,11 +6,11 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 13:31:42 by alkane            #+#    #+#             */
-/*   Updated: 2022/06/08 13:55:56 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/09 12:39:45 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../philo.h"
+#include "../philo_bonus.h"
 
 size_t	ft_strlen(const char *s)
 {

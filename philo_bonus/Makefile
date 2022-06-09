@@ -1,8 +1,9 @@
 NAME	= philo_bonus
 CC		= gcc
 CFLAGS	= -Wall -Werror -Wextra -pthread -fsanitize=thread
-SRCS	= main.c philo.c init.c utils.c waiters.c libft/ft_atoi.c libft/ft_calloc.c libft/ft_itoa.c \
-libft/ft_strjoin.c libft/ft_strlen.c
+SRCS	= source/main.c source/philo.c source/init.c source/utils.c source/waiters.c \
+source/libft/ft_atoi.c source/libft/ft_calloc.c source/libft/ft_itoa.c \
+source/libft/ft_strjoin.c source/libft/ft_strlen.c
 
 OBJS	= ${SRCS:.c=.o}
 BONUS_OBJS	= ${BONUS:.c=.o}
@@ -12,12 +13,8 @@ all: $(NAME)
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
 
-# bonus: $(BONUS_OBJS)
-# 	rm -f $(BONUS_OBJS)
-
 clean:
 	rm -f $(OBJS) 
-#$(BONUS_OBJS)
 
 fclean: clean
 	rm -f $(NAME)

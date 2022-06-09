@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   checks.c                                           :+:      :+:    :+:   */
+/*   waiters.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 19:04:09 by alkane            #+#    #+#             */
-/*   Updated: 2022/06/08 00:19:04 by alistair         ###   ########.fr       */
+/*   Updated: 2022/06/09 12:32:12 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	check_done_flag(t_data *data)
 	return (temp);
 }
 
-void	*monitor_thread(void *arg)
+void	*waiter_thread(void *arg)
 {
 	t_philo		*philo;
 	t_data		*data;
@@ -47,7 +47,7 @@ void	*monitor_thread(void *arg)
 	return (NULL);
 }
 
-void	*monitor_thread_eat(void *arg)
+void	*finish_eating_waiter(void *arg)
 {
 	t_data	*data;
 

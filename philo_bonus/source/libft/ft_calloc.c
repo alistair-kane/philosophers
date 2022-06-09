@@ -6,11 +6,11 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/27 22:09:45 by alkane            #+#    #+#             */
-/*   Updated: 2022/06/08 12:52:07 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/09 12:39:46 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../philo.h"
+#include "../philo_bonus.h"
 
 void	*ft_calloc(size_t nmemb, size_t size)
 {

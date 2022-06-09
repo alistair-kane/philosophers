@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:14:51 by alkane            #+#    #+#             */
-/*   Updated: 2022/06/06 22:31:44 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/09 12:19:16 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,11 @@ static int	philo_init(t_data *data)
 {
 	int	i;
 	int	n;
-	
+
 	if (pthread_mutex_init(&(data->done_lock), NULL) == 1)
 		return (1);
 	i = 0;
-	n = data->n_philo;	
+	n = data->n_philo;
 	while (i < n)
 	{
 		data->philos[i].id = i;

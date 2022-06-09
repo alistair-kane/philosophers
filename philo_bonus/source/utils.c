@@ -6,11 +6,11 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 11:18:31 by alkane            #+#    #+#             */
-/*   Updated: 2022/06/07 19:29:42 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/09 12:39:45 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 
 long long	get_time(void)
 {
@@ -22,17 +22,6 @@ long long	get_time(void)
 	return (milliseconds);
 }
 
-void	print_message(t_philo *philo, char *msg)
-{
-	t_data	*data;
-
-	data = philo->data;
-	pthread_mutex_lock(&(data->done_lock));
-	if (data->done_flag == 0)
-		printf("%lld\t%d\t%s \n", get_time() - data->start_t, philo->id + 1, msg);
-	pthread_mutex_unlock(&(data->done_lock));
-}
-
 void	spend_time(long long time_ms)
 {
 	long long	end;
@@ -42,18 +31,12 @@ void	spend_time(long long time_ms)
 		usleep(time_ms / 1000);
 }
 
-int	tidy_up(t_data *data)
+void	print_message(t_philo *philo, char *msg)
 {
-	int	i;
+	t_data	*data;
 
-	i = 0;
-	while (i < data->n_philo)
-	{
-		pthread_join(data->philos[i].thread_id, NULL);
-		pthread_mutex_destroy(&(data->philos[i++].checking));
-	}
-	i = 0;
-	while (i < data->n_philo)
-		pthread_mutex_destroy(&(data->fork_array[i++]));
-	return (0);
+	data = philo->data;
+	sem_wait(data->print_lock);
+	printf("%lld\t%d\t%s\n", get_time() - data->start_ts, philo->id + 1, msg);
+	sem_post(data->print_lock);
 }
